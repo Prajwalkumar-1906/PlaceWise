@@ -1,0 +1,114 @@
+{
+  "model_type": "XGBoostClassifier",
+  "random_seed": 42,
+  "features": {
+    "numerical": [
+      "cgpa",
+      "tenth_pct",
+      "twelfth_pct",
+      "backlogs",
+      "dsa_problems_solved",
+      "projects",
+      "internships",
+      "certifications",
+      "hackathons",
+      "communication_score",
+      "aptitude_score"
+    ],
+    "categorical": [
+      "branch",
+      "college_tier",
+      "gender",
+      "work_experience"
+    ]
+  },
+  "transformed_feature_names": [
+    "cgpa",
+    "tenth_pct",
+    "twelfth_pct",
+    "backlogs",
+    "dsa_problems_solved",
+    "projects",
+    "internships",
+    "certifications",
+    "hackathons",
+    "communication_score",
+    "aptitude_score",
+    "branch_Civil",
+    "branch_Computer Science",
+    "branch_Electrical",
+    "branch_Electronics & Comm",
+    "branch_Information Technology",
+    "branch_Mechanical",
+    "college_tier_1",
+    "college_tier_2",
+    "college_tier_3",
+    "gender_Female",
+    "gender_Male",
+    "work_experience_0",
+    "work_experience_1"
+  ],
+  "hyperparameters": {
+    "n_estimators": 300,
+    "learning_rate": 0.05,
+    "max_depth": 5,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "eval_metric": "logloss"
+  },
+  "metrics_test": {
+    "accuracy": 0.896,
+    "precision": 0.9169096209912536,
+    "recall": 0.9676923076923077,
+    "f1": 0.9416167664670658,
+    "roc_auc": 0.8735076923076923,
+    "pr_auc": 0.9761892209766705,
+    "brier_score": 0.07732479976970957,
+    "confusion_matrix": {
+      "tn": 43,
+      "fp": 57,
+      "fn": 21,
+      "tp": 629,
+      "matrix": [
+        [
+          43,
+          57
+        ],
+        [
+          21,
+          629
+        ]
+      ]
+    },
+    "calibration": {
+      "prob_true": [
+        0.0,
+        0.13333333333333333,
+        0.3076923076923077,
+        0.5,
+        0.7142857142857143,
+        0.6428571428571429,
+        0.75,
+        0.64,
+        0.8169014084507042,
+        0.958029197080292
+      ],
+      "prob_pred": [
+        0.05634662555530667,
+        0.1493606482942899,
+        0.24639962269709662,
+        0.35469495356082914,
+        0.45047967774527414,
+        0.5620723622185844,
+        0.654276905315263,
+        0.748612699508667,
+        0.8558603953307783,
+        0.977757647524785
+      ]
+    }
+  },
+  "dataset_type": "unbiased",
+  "model_name": "best_placement_model",
+  "saved_at": "2026-10-15T04:17:28.422665+00:00",
+  "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\best_placement_model.joblib"
+}

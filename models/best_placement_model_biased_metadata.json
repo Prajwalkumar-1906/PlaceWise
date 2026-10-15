@@ -1,0 +1,119 @@
+{
+  "model_type": "XGBoostClassifier",
+  "random_seed": 42,
+  "features": {
+    "numerical": [
+      "cgpa",
+      "tenth_pct",
+      "twelfth_pct",
+      "backlogs",
+      "dsa_problems_solved",
+      "projects",
+      "internships",
+      "certifications",
+      "hackathons",
+      "communication_score",
+      "aptitude_score"
+    ],
+    "categorical": [
+      "branch",
+      "college_tier",
+      "gender",
+      "work_experience"
+    ]
+  },
+  "transformed_feature_names": [
+    "cgpa",
+    "tenth_pct",
+    "twelfth_pct",
+    "backlogs",
+    "dsa_problems_solved",
+    "projects",
+    "internships",
+    "certifications",
+    "hackathons",
+    "communication_score",
+    "aptitude_score",
+    "branch_Civil",
+    "branch_Computer Science",
+    "branch_Electrical",
+    "branch_Electronics & Comm",
+    "branch_Information Technology",
+    "branch_Mechanical",
+    "college_tier_1",
+    "college_tier_2",
+    "college_tier_3",
+    "gender_Female",
+    "gender_Male",
+    "work_experience_0",
+    "work_experience_1"
+  ],
+  "hyperparameters": {
+    "max_depth": 3,
+    "learning_rate": 0.03196951817391241,
+    "n_estimators": 200,
+    "subsample": 0.8096244944759625,
+    "colsample_bytree": 0.9248115864875548,
+    "min_child_weight": 2,
+    "gamma": 1.285586096034029,
+    "scale_pos_weight": 0.29103651789007745,
+    "random_state": 42,
+    "eval_metric": "logloss",
+    "n_jobs": -1
+  },
+  "metrics_test": {
+    "accuracy": 0.808,
+    "precision": 0.9275929549902152,
+    "recall": 0.8158347676419966,
+    "f1": 0.8681318681318682,
+    "roc_auc": 0.8854556009328949,
+    "pr_auc": 0.9633147171217533,
+    "brier_score": 0.1338437435732845,
+    "confusion_matrix": {
+      "tn": 132,
+      "fp": 37,
+      "fn": 107,
+      "tp": 474,
+      "matrix": [
+        [
+          132,
+          37
+        ],
+        [
+          107,
+          474
+        ]
+      ]
+    },
+    "calibration": {
+      "prob_true": [
+        0.038461538461538464,
+        0.2391304347826087,
+        0.4339622641509434,
+        0.5306122448979592,
+        0.7076923076923077,
+        0.8125,
+        0.8658536585365854,
+        0.8818181818181818,
+        0.9919354838709677,
+        1.0
+      ],
+      "prob_pred": [
+        0.0689882760007794,
+        0.14914941220827724,
+        0.2555446925590623,
+        0.35551044284080974,
+        0.4563452573922964,
+        0.5575461033731699,
+        0.6511283858520228,
+        0.7526136024431749,
+        0.8498839106290571,
+        0.9393787916380031
+      ]
+    }
+  },
+  "dataset_type": "biased",
+  "model_name": "best_placement_model_biased",
+  "saved_at": "2026-10-15T04:16:04.724842+00:00",
+  "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\best_placement_model_biased.joblib"
+}

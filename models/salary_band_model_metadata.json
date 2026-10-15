@@ -1,0 +1,71 @@
+{
+  "model_type": "GradientBoostingClassifier",
+  "random_seed": 42,
+  "features": {
+    "numerical": [
+      "cgpa",
+      "tenth_pct",
+      "twelfth_pct",
+      "backlogs",
+      "dsa_problems_solved",
+      "projects",
+      "internships",
+      "certifications",
+      "hackathons",
+      "communication_score",
+      "aptitude_score"
+    ],
+    "categorical": [
+      "branch",
+      "college_tier",
+      "gender",
+      "work_experience"
+    ]
+  },
+  "metrics_test": {
+    "accuracy": 0.8446153846153847,
+    "macro_f1": 0.8466969743530489,
+    "weighted_f1": 0.8449904290929833,
+    "report": {
+      "High": {
+        "precision": 0.8857142857142857,
+        "recall": 0.8266666666666667,
+        "f1-score": 0.8551724137931035,
+        "support": 75.0
+      },
+      "Low": {
+        "precision": 0.875,
+        "recall": 0.8547854785478548,
+        "f1-score": 0.8647746243739566,
+        "support": 303.0
+      },
+      "Mid": {
+        "precision": 0.8028169014084507,
+        "recall": 0.8382352941176471,
+        "f1-score": 0.8201438848920863,
+        "support": 272.0
+      },
+      "accuracy": 0.8446153846153847,
+      "macro avg": {
+        "precision": 0.8545103957075787,
+        "recall": 0.8398958131107229,
+        "f1-score": 0.8466969743530489,
+        "support": 650.0
+      },
+      "weighted avg": {
+        "precision": 0.8460304132487232,
+        "recall": 0.8446153846153847,
+        "f1-score": 0.8449904290929833,
+        "support": 650.0
+      }
+    }
+  },
+  "classes": [
+    "High",
+    "Low",
+    "Mid"
+  ],
+  "model_name": "salary_band_model",
+  "saved_at": "2026-10-15T04:17:28.439811+00:00",
+  "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\salary_band_model.joblib"
+}
