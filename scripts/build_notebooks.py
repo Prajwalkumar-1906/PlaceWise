@@ -1,4 +1,4 @@
-"""Generates 01_eda.ipynb, 02_modeling.ipynb, and 03_explainability.ipynb using nbformat."""
+"""Generates 01_eda.ipynb, 02_modeling.ipynb, 03_explainability.ipynb, and 04_fairness_audit.ipynb using nbformat."""
 
 from pathlib import Path
 import nbformat as nbf
@@ -288,7 +288,54 @@ def generate_explainability_notebook() -> None:
     print(f"Generated {out_file}")
 
 
+def generate_fairness_notebook() -> None:
+    nb = nbf.v4.new_notebook()
+    nb.cells = [
+        nbf.v4.new_markdown_cell(
+            "# 04: Algorithmic Fairness Audit & Mitigation\n"
+            "## Campus Placement Predictor\n\n"
+            "This notebook audits the placement predictor for disparities across Gender and College Tier using Fairlearn,\n"
+            "evaluates 'Fairness through Unawareness', benchmarks three mitigation algorithms (Reweighing, ThresholdOptimizer, ExponentiatedGradient),\n"
+            "and visualizes the Pareto accuracy vs fairness frontier."
+        ),
+        nbf.v4.new_code_cell(
+            "%matplotlib inline\n"
+            "import matplotlib.pyplot as plt\n"
+            "import pandas as pd\n"
+            "import numpy as np\n"
+            "from IPython.display import Image, display\n\n"
+            "from src.fairness.audit import FairnessAuditor\n"
+            "from src.utils.config import load_config"
+        ),
+        nbf.v4.new_markdown_cell("### 1. Run or Load Full Fairness Benchmark"),
+        nbf.v4.new_code_cell(
+            "auditor = FairnessAuditor()\n"
+            "audit_results = auditor.run_full_audit()\n"
+            "tradeoffs = pd.DataFrame(audit_results['tradeoffs']['college_tier'])\n"
+            "print('College Tier Mitigation Trade-Off Summary:')\n"
+            "display(tradeoffs)"
+        ),
+        nbf.v4.new_markdown_cell("### 2. Disaggregated Selection Rates and Pareto Frontier"),
+        nbf.v4.new_code_cell(
+            "display(Image(filename='reports/figures/fairness_selection_rates.png'))\n"
+            "display(Image(filename='reports/figures/fairness_tradeoff_pareto.png'))"
+        ),
+        nbf.v4.new_markdown_cell("### 3. Read Automated Markdown Fairness Report"),
+        nbf.v4.new_code_cell(
+            "with open('reports/fairness_report.md', 'r') as f:\n"
+            "    report_text = f.read()\n"
+            "print(report_text[:1200] + '\\n...\\n[See full report at reports/fairness_report.md]')"
+        ),
+    ]
+
+    out_file = Path("notebooks/04_fairness_audit.ipynb")
+    with open(out_file, "w", encoding="utf-8") as f:
+        nbf.write(nb, f)
+    print(f"Generated {out_file}")
+
+
 if __name__ == "__main__":
     generate_eda_notebook()
     generate_modeling_notebook()
     generate_explainability_notebook()
+    generate_fairness_notebook()
