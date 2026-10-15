@@ -1,6 +1,7 @@
 """Generates 01_eda.ipynb, 02_modeling.ipynb, 03_explainability.ipynb, and 04_fairness_audit.ipynb using nbformat."""
 
 from pathlib import Path
+
 import nbformat as nbf
 
 
@@ -256,7 +257,7 @@ def generate_explainability_notebook() -> None:
             "print(f'Base Probability:   {explanation[\"base_probability\"]:.1%}')\n"
             "print(f'Model Probability:  {explanation[\"model_probability\"]:.1%}')\n"
             "print(f'Net Prob Delta:     {explanation[\"total_prob_delta_points\"]:+.1f} points')\n"
-            "print(f'Additivity Verified: {explanation[\"additivity_check\"][\"is_additive\"]} (Error: {explanation[\"additivity_check\"][\"additivity_error\"]:.2e})\\n')\n\n"
+            'print(f\'Additivity Verified: {explanation["additivity_check"]["is_additive"]} (Error: {explanation["additivity_check"]["additivity_error"]:.2e})\\n\')\n\n'
             "print('Plain-English Impact Drivers:')\n"
             "for stmt in explanation['plain_english_summary']:\n"
             "    print(f'  • {stmt}')"

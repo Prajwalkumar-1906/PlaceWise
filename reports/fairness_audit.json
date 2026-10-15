@@ -1,0 +1,673 @@
+{
+  "models": {
+    "Baseline (Aware)": {
+      "accuracy": 0.808,
+      "metrics_by_sensitive_attribute": {
+        "gender": {
+          "demographic_parity_difference": 0.1293,
+          "demographic_parity_ratio": 0.8243,
+          "equalized_odds_difference": 0.065,
+          "equal_opportunity_difference": 0.065,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.808,
+          "by_group": {
+            "Female": {
+              "count": 315,
+              "selection_rate": 0.6063,
+              "accuracy": 0.7841,
+              "tpr": 0.7758,
+              "fpr": 0.1957,
+              "fnr": 0.2242
+            },
+            "Male": {
+              "count": 435,
+              "selection_rate": 0.7356,
+              "accuracy": 0.8253,
+              "tpr": 0.8408,
+              "fpr": 0.2468,
+              "fnr": 0.1592
+            }
+          }
+        },
+        "college_tier": {
+          "demographic_parity_difference": 0.0708,
+          "demographic_parity_ratio": 0.9002,
+          "equalized_odds_difference": 0.0485,
+          "equal_opportunity_difference": 0.0485,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.808,
+          "by_group": {
+            "1": {
+              "count": 83,
+              "selection_rate": 0.6386,
+              "accuracy": 0.7831,
+              "tpr": 0.7778,
+              "fpr": 0.2,
+              "fnr": 0.2222
+            },
+            "2": {
+              "count": 289,
+              "selection_rate": 0.7093,
+              "accuracy": 0.8028,
+              "tpr": 0.8136,
+              "fpr": 0.2453,
+              "fnr": 0.1864
+            },
+            "3": {
+              "count": 378,
+              "selection_rate": 0.6693,
+              "accuracy": 0.8175,
+              "tpr": 0.8262,
+              "fpr": 0.2083,
+              "fnr": 0.1738
+            }
+          }
+        },
+        "gender_x_tier": {
+          "demographic_parity_difference": 0.2855,
+          "demographic_parity_ratio": 0.6305,
+          "equalized_odds_difference": 0.2765,
+          "equal_opportunity_difference": 0.2765,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.808,
+          "by_group": {
+            "Female_Tier1": {
+              "count": 39,
+              "selection_rate": 0.4872,
+              "accuracy": 0.6667,
+              "tpr": 0.6154,
+              "fpr": 0.2308,
+              "fnr": 0.3846
+            },
+            "Female_Tier2": {
+              "count": 109,
+              "selection_rate": 0.633,
+              "accuracy": 0.8165,
+              "tpr": 0.8025,
+              "fpr": 0.1429,
+              "fnr": 0.1975
+            },
+            "Female_Tier3": {
+              "count": 167,
+              "selection_rate": 0.6168,
+              "accuracy": 0.7904,
+              "tpr": 0.7931,
+              "fpr": 0.2157,
+              "fnr": 0.2069
+            },
+            "Male_Tier1": {
+              "count": 44,
+              "selection_rate": 0.7727,
+              "accuracy": 0.8864,
+              "tpr": 0.8919,
+              "fpr": 0.1429,
+              "fnr": 0.1081
+            },
+            "Male_Tier2": {
+              "count": 180,
+              "selection_rate": 0.7556,
+              "accuracy": 0.7944,
+              "tpr": 0.8194,
+              "fpr": 0.36,
+              "fnr": 0.1806
+            },
+            "Male_Tier3": {
+              "count": 211,
+              "selection_rate": 0.7109,
+              "accuracy": 0.8389,
+              "tpr": 0.8494,
+              "fpr": 0.2,
+              "fnr": 0.1506
+            }
+          }
+        }
+      }
+    },
+    "Unawareness (Blind)": {
+      "accuracy": 0.8427,
+      "metrics_by_sensitive_attribute": {
+        "gender": {
+          "demographic_parity_difference": 0.0003,
+          "demographic_parity_ratio": 0.9996,
+          "equalized_odds_difference": 0.1194,
+          "equal_opportunity_difference": 0.0273,
+          "overall_selection_rate": 0.8573,
+          "overall_accuracy": 0.8427,
+          "by_group": {
+            "Female": {
+              "count": 315,
+              "selection_rate": 0.8571,
+              "accuracy": 0.8063,
+              "tpr": 0.9686,
+              "fpr": 0.587,
+              "fnr": 0.0314
+            },
+            "Male": {
+              "count": 435,
+              "selection_rate": 0.8575,
+              "accuracy": 0.869,
+              "tpr": 0.9413,
+              "fpr": 0.4675,
+              "fnr": 0.0587
+            }
+          }
+        },
+        "college_tier": {
+          "demographic_parity_difference": 0.0197,
+          "demographic_parity_ratio": 0.9773,
+          "equalized_odds_difference": 0.0908,
+          "equal_opportunity_difference": 0.0361,
+          "overall_selection_rate": 0.8573,
+          "overall_accuracy": 0.8427,
+          "by_group": {
+            "1": {
+              "count": 83,
+              "selection_rate": 0.8675,
+              "accuracy": 0.8434,
+              "tpr": 0.9683,
+              "fpr": 0.55,
+              "fnr": 0.0317
+            },
+            "2": {
+              "count": 289,
+              "selection_rate": 0.8478,
+              "accuracy": 0.8581,
+              "tpr": 0.9322,
+              "fpr": 0.4717,
+              "fnr": 0.0678
+            },
+            "3": {
+              "count": 378,
+              "selection_rate": 0.8624,
+              "accuracy": 0.8307,
+              "tpr": 0.9645,
+              "fpr": 0.5625,
+              "fnr": 0.0355
+            }
+          }
+        },
+        "gender_x_tier": {
+          "demographic_parity_difference": 0.0274,
+          "demographic_parity_ratio": 0.9686,
+          "equalized_odds_difference": 0.4066,
+          "equal_opportunity_difference": 0.058,
+          "overall_selection_rate": 0.8573,
+          "overall_accuracy": 0.8427,
+          "by_group": {
+            "Female_Tier1": {
+              "count": 39,
+              "selection_rate": 0.8718,
+              "accuracy": 0.7436,
+              "tpr": 0.9615,
+              "fpr": 0.6923,
+              "fnr": 0.0385
+            },
+            "Female_Tier2": {
+              "count": 109,
+              "selection_rate": 0.8532,
+              "accuracy": 0.8349,
+              "tpr": 0.963,
+              "fpr": 0.5357,
+              "fnr": 0.037
+            },
+            "Female_Tier3": {
+              "count": 167,
+              "selection_rate": 0.8563,
+              "accuracy": 0.8024,
+              "tpr": 0.9741,
+              "fpr": 0.5882,
+              "fnr": 0.0259
+            },
+            "Male_Tier1": {
+              "count": 44,
+              "selection_rate": 0.8636,
+              "accuracy": 0.9318,
+              "tpr": 0.973,
+              "fpr": 0.2857,
+              "fnr": 0.027
+            },
+            "Male_Tier2": {
+              "count": 180,
+              "selection_rate": 0.8444,
+              "accuracy": 0.8722,
+              "tpr": 0.9161,
+              "fpr": 0.4,
+              "fnr": 0.0839
+            },
+            "Male_Tier3": {
+              "count": 211,
+              "selection_rate": 0.8673,
+              "accuracy": 0.8531,
+              "tpr": 0.9578,
+              "fpr": 0.5333,
+              "fnr": 0.0422
+            }
+          }
+        }
+      }
+    },
+    "Mitigated (Reweighing)": {
+      "accuracy": 0.8547,
+      "metrics_by_sensitive_attribute": {
+        "gender": {
+          "demographic_parity_difference": 0.0727,
+          "demographic_parity_ratio": 0.917,
+          "equalized_odds_difference": 0.0738,
+          "equal_opportunity_difference": 0.0018,
+          "overall_selection_rate": 0.8453,
+          "overall_accuracy": 0.8547,
+          "by_group": {
+            "Female": {
+              "count": 315,
+              "selection_rate": 0.8032,
+              "accuracy": 0.8349,
+              "tpr": 0.9507,
+              "fpr": 0.4457,
+              "fnr": 0.0493
+            },
+            "Male": {
+              "count": 435,
+              "selection_rate": 0.8759,
+              "accuracy": 0.869,
+              "tpr": 0.9525,
+              "fpr": 0.5195,
+              "fnr": 0.0475
+            }
+          }
+        },
+        "college_tier": {
+          "demographic_parity_difference": 0.0268,
+          "demographic_parity_ratio": 0.9688,
+          "equalized_odds_difference": 0.0406,
+          "equal_opportunity_difference": 0.0203,
+          "overall_selection_rate": 0.8453,
+          "overall_accuracy": 0.8547,
+          "by_group": {
+            "1": {
+              "count": 83,
+              "selection_rate": 0.8313,
+              "accuracy": 0.8554,
+              "tpr": 0.9524,
+              "fpr": 0.45,
+              "fnr": 0.0476
+            },
+            "2": {
+              "count": 289,
+              "selection_rate": 0.8581,
+              "accuracy": 0.8616,
+              "tpr": 0.9407,
+              "fpr": 0.4906,
+              "fnr": 0.0593
+            },
+            "3": {
+              "count": 378,
+              "selection_rate": 0.8386,
+              "accuracy": 0.8492,
+              "tpr": 0.961,
+              "fpr": 0.4792,
+              "fnr": 0.039
+            }
+          }
+        },
+        "gender_x_tier": {
+          "demographic_parity_difference": 0.0874,
+          "demographic_parity_ratio": 0.9005,
+          "equalized_odds_difference": 0.2698,
+          "equal_opportunity_difference": 0.0499,
+          "overall_selection_rate": 0.8453,
+          "overall_accuracy": 0.8547,
+          "by_group": {
+            "Female_Tier1": {
+              "count": 39,
+              "selection_rate": 0.7949,
+              "accuracy": 0.7692,
+              "tpr": 0.9231,
+              "fpr": 0.5385,
+              "fnr": 0.0769
+            },
+            "Female_Tier2": {
+              "count": 109,
+              "selection_rate": 0.8257,
+              "accuracy": 0.844,
+              "tpr": 0.9506,
+              "fpr": 0.4643,
+              "fnr": 0.0494
+            },
+            "Female_Tier3": {
+              "count": 167,
+              "selection_rate": 0.7904,
+              "accuracy": 0.8443,
+              "tpr": 0.9569,
+              "fpr": 0.4118,
+              "fnr": 0.0431
+            },
+            "Male_Tier1": {
+              "count": 44,
+              "selection_rate": 0.8636,
+              "accuracy": 0.9318,
+              "tpr": 0.973,
+              "fpr": 0.2857,
+              "fnr": 0.027
+            },
+            "Male_Tier2": {
+              "count": 180,
+              "selection_rate": 0.8778,
+              "accuracy": 0.8722,
+              "tpr": 0.9355,
+              "fpr": 0.52,
+              "fnr": 0.0645
+            },
+            "Male_Tier3": {
+              "count": 211,
+              "selection_rate": 0.8768,
+              "accuracy": 0.8531,
+              "tpr": 0.9639,
+              "fpr": 0.5556,
+              "fnr": 0.0361
+            }
+          }
+        }
+      }
+    },
+    "Mitigated (ThresholdOptimizer)": {
+      "accuracy": 0.848,
+      "metrics_by_sensitive_attribute": {
+        "gender": {
+          "demographic_parity_difference": 0.0938,
+          "demographic_parity_ratio": 0.8912,
+          "equalized_odds_difference": 0.0675,
+          "equal_opportunity_difference": 0.0293,
+          "overall_selection_rate": 0.8227,
+          "overall_accuracy": 0.848,
+          "by_group": {
+            "Female": {
+              "count": 315,
+              "selection_rate": 0.7683,
+              "accuracy": 0.819,
+              "tpr": 0.9148,
+              "fpr": 0.413,
+              "fnr": 0.0852
+            },
+            "Male": {
+              "count": 435,
+              "selection_rate": 0.8621,
+              "accuracy": 0.869,
+              "tpr": 0.9441,
+              "fpr": 0.4805,
+              "fnr": 0.0559
+            }
+          }
+        },
+        "college_tier": {
+          "demographic_parity_difference": 0.0783,
+          "demographic_parity_ratio": 0.9065,
+          "equalized_odds_difference": 0.0829,
+          "equal_opportunity_difference": 0.0702,
+          "overall_selection_rate": 0.8227,
+          "overall_accuracy": 0.848,
+          "by_group": {
+            "1": {
+              "count": 83,
+              "selection_rate": 0.759,
+              "accuracy": 0.8072,
+              "tpr": 0.873,
+              "fpr": 0.4,
+              "fnr": 0.127
+            },
+            "2": {
+              "count": 289,
+              "selection_rate": 0.8374,
+              "accuracy": 0.8754,
+              "tpr": 0.9364,
+              "fpr": 0.3962,
+              "fnr": 0.0636
+            },
+            "3": {
+              "count": 378,
+              "selection_rate": 0.8254,
+              "accuracy": 0.836,
+              "tpr": 0.9433,
+              "fpr": 0.4792,
+              "fnr": 0.0567
+            }
+          }
+        },
+        "gender_x_tier": {
+          "demographic_parity_difference": 0.175,
+          "demographic_parity_ratio": 0.7982,
+          "equalized_odds_difference": 0.4127,
+          "equal_opportunity_difference": 0.1826,
+          "overall_selection_rate": 0.8227,
+          "overall_accuracy": 0.848,
+          "by_group": {
+            "Female_Tier1": {
+              "count": 39,
+              "selection_rate": 0.6923,
+              "accuracy": 0.6667,
+              "tpr": 0.7692,
+              "fpr": 0.5385,
+              "fnr": 0.2308
+            },
+            "Female_Tier2": {
+              "count": 109,
+              "selection_rate": 0.789,
+              "accuracy": 0.8624,
+              "tpr": 0.9383,
+              "fpr": 0.3571,
+              "fnr": 0.0617
+            },
+            "Female_Tier3": {
+              "count": 167,
+              "selection_rate": 0.7725,
+              "accuracy": 0.8263,
+              "tpr": 0.931,
+              "fpr": 0.4118,
+              "fnr": 0.069
+            },
+            "Male_Tier1": {
+              "count": 44,
+              "selection_rate": 0.8182,
+              "accuracy": 0.9318,
+              "tpr": 0.9459,
+              "fpr": 0.1429,
+              "fnr": 0.0541
+            },
+            "Male_Tier2": {
+              "count": 180,
+              "selection_rate": 0.8667,
+              "accuracy": 0.8833,
+              "tpr": 0.9355,
+              "fpr": 0.44,
+              "fnr": 0.0645
+            },
+            "Male_Tier3": {
+              "count": 211,
+              "selection_rate": 0.8673,
+              "accuracy": 0.8436,
+              "tpr": 0.9518,
+              "fpr": 0.5556,
+              "fnr": 0.0482
+            }
+          }
+        }
+      }
+    },
+    "Mitigated (ExponentiatedGradient)": {
+      "accuracy": 0.8,
+      "metrics_by_sensitive_attribute": {
+        "gender": {
+          "demographic_parity_difference": 0.1621,
+          "demographic_parity_ratio": 0.7837,
+          "equalized_odds_difference": 0.1139,
+          "equal_opportunity_difference": 0.093,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.8,
+          "by_group": {
+            "Female": {
+              "count": 315,
+              "selection_rate": 0.5873,
+              "accuracy": 0.7714,
+              "tpr": 0.7534,
+              "fpr": 0.1848,
+              "fnr": 0.2466
+            },
+            "Male": {
+              "count": 435,
+              "selection_rate": 0.7494,
+              "accuracy": 0.8207,
+              "tpr": 0.8464,
+              "fpr": 0.2987,
+              "fnr": 0.1536
+            }
+          }
+        },
+        "college_tier": {
+          "demographic_parity_difference": 0.0666,
+          "demographic_parity_ratio": 0.9039,
+          "equalized_odds_difference": 0.0892,
+          "equal_opportunity_difference": 0.0892,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.8,
+          "by_group": {
+            "1": {
+              "count": 83,
+              "selection_rate": 0.6265,
+              "accuracy": 0.7711,
+              "tpr": 0.7619,
+              "fpr": 0.2,
+              "fnr": 0.2381
+            },
+            "2": {
+              "count": 289,
+              "selection_rate": 0.6817,
+              "accuracy": 0.7682,
+              "tpr": 0.7754,
+              "fpr": 0.2642,
+              "fnr": 0.2246
+            },
+            "3": {
+              "count": 378,
+              "selection_rate": 0.6931,
+              "accuracy": 0.8307,
+              "tpr": 0.8511,
+              "fpr": 0.2292,
+              "fnr": 0.1489
+            }
+          }
+        },
+        "gender_x_tier": {
+          "demographic_parity_difference": 0.2628,
+          "demographic_parity_ratio": 0.6496,
+          "equalized_odds_difference": 0.2581,
+          "equal_opportunity_difference": 0.2581,
+          "overall_selection_rate": 0.6813,
+          "overall_accuracy": 0.8,
+          "by_group": {
+            "Female_Tier1": {
+              "count": 39,
+              "selection_rate": 0.4872,
+              "accuracy": 0.6667,
+              "tpr": 0.6154,
+              "fpr": 0.2308,
+              "fnr": 0.3846
+            },
+            "Female_Tier2": {
+              "count": 109,
+              "selection_rate": 0.5688,
+              "accuracy": 0.7339,
+              "tpr": 0.7037,
+              "fpr": 0.1786,
+              "fnr": 0.2963
+            },
+            "Female_Tier3": {
+              "count": 167,
+              "selection_rate": 0.6228,
+              "accuracy": 0.8204,
+              "tpr": 0.819,
+              "fpr": 0.1765,
+              "fnr": 0.181
+            },
+            "Male_Tier1": {
+              "count": 44,
+              "selection_rate": 0.75,
+              "accuracy": 0.8636,
+              "tpr": 0.8649,
+              "fpr": 0.1429,
+              "fnr": 0.1351
+            },
+            "Male_Tier2": {
+              "count": 180,
+              "selection_rate": 0.75,
+              "accuracy": 0.7889,
+              "tpr": 0.8129,
+              "fpr": 0.36,
+              "fnr": 0.1871
+            },
+            "Male_Tier3": {
+              "count": 211,
+              "selection_rate": 0.7488,
+              "accuracy": 0.8389,
+              "tpr": 0.8735,
+              "fpr": 0.2889,
+              "fnr": 0.1265
+            }
+          }
+        }
+      }
+    }
+  },
+  "tradeoffs": {
+    "college_tier": [
+      {
+        "model": "Baseline (Aware)",
+        "accuracy": 0.808,
+        "dp_difference": 0.0708,
+        "dp_ratio": 0.9002,
+        "equalized_odds_diff": 0.0485,
+        "bias_reduction_percentage": 0.0,
+        "equalized_odds_reduction_pct": 0.0
+      },
+      {
+        "model": "Unawareness (Blind)",
+        "accuracy": 0.8427,
+        "dp_difference": 0.0197,
+        "dp_ratio": 0.9773,
+        "equalized_odds_diff": 0.0908,
+        "bias_reduction_percentage": 72.2,
+        "equalized_odds_reduction_pct": -87.2
+      },
+      {
+        "model": "Mitigated (Reweighing)",
+        "accuracy": 0.8547,
+        "dp_difference": 0.0268,
+        "dp_ratio": 0.9688,
+        "equalized_odds_diff": 0.0406,
+        "bias_reduction_percentage": 62.1,
+        "equalized_odds_reduction_pct": 16.3
+      },
+      {
+        "model": "Mitigated (ThresholdOptimizer)",
+        "accuracy": 0.848,
+        "dp_difference": 0.0783,
+        "dp_ratio": 0.9065,
+        "equalized_odds_diff": 0.0829,
+        "bias_reduction_percentage": -10.6,
+        "equalized_odds_reduction_pct": -70.9
+      },
+      {
+        "model": "Mitigated (ExponentiatedGradient)",
+        "accuracy": 0.8,
+        "dp_difference": 0.0666,
+        "dp_ratio": 0.9039,
+        "equalized_odds_diff": 0.0892,
+        "bias_reduction_percentage": 5.9,
+        "equalized_odds_reduction_pct": -83.9
+      }
+    ]
+  },
+  "sensitive_attributes": [
+    "gender",
+    "college_tier",
+    "gender_x_tier"
+  ]
+}

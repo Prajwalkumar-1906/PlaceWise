@@ -1,9 +1,11 @@
 """Fairness audit engine evaluating aware, unaware, and mitigated models across gender and college tier."""
 
 import argparse
+import json
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from sklearn.metrics import accuracy_score, roc_auc_score
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
@@ -241,6 +243,23 @@ class FairnessAuditor:
         figures_dir = self.paths.get("figures_dir", "reports/figures")
         report_file = self.paths.get("fairness_report_file", "reports/fairness_report.md")
         generate_fairness_report(audit_results, output_md_path=report_file, figures_dir=figures_dir)
+
+        # Save JSON audit results for Streamlit app and programmatic consumption
+        audit_json_path = Path(self.paths.get("reports_dir", "reports")) / "fairness_audit.json"
+        audit_json_path.parent.mkdir(parents=True, exist_ok=True)
+
+        def _json_serialize(obj: Any) -> Any:
+            if isinstance(obj, (np.floating, float)):
+                return float(obj)
+            if isinstance(obj, (np.integer, int)):
+                return int(obj)
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return str(obj)
+
+        with open(audit_json_path, "w", encoding="utf-8") as f:
+            json.dump(audit_results, f, indent=2, default=_json_serialize)
+        logger.info(f"Saved fairness audit JSON to {audit_json_path.resolve()}")
 
         return audit_results
 

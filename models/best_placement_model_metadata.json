@@ -109,6 +109,6 @@
   },
   "dataset_type": "unbiased",
   "model_name": "best_placement_model",
-  "saved_at": "2026-10-15T05:02:48.179924+00:00",
+  "saved_at": "2026-10-15T05:38:30.646425+00:00",
   "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\best_placement_model.joblib"
 }

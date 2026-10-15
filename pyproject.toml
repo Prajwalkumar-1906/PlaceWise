@@ -28,6 +28,7 @@ include = ["src*"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
+extend-exclude = ["notebooks/*"]
 
 [tool.ruff.lint]
 select = [
@@ -42,6 +43,9 @@ select = [
 ignore = [
     "E501", # Line too long handled by formatter
     "B008", # Do not perform function call in argument defaults
+    "C408", # Unnecessary dict call (standard Plotly parameter syntax)
+    "B905", # zip without explicit strict
+    "E402", # Module level import not at top of file
 ]
 
 [tool.black]

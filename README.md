@@ -171,10 +171,46 @@ make lint
 ## 5. Implementation Status
 
 | Phase | Description | Status |
-| :--- | :--- | :--- |
-| **Phase 1: Foundations** | Repo scaffold, config system, logging, seeding, data loader, Pydantic validation, synthetic generator with bias injection, unit tests (85.5% coverage), CI workflow | **COMPLETED** |
-| **Phase 2: EDA & Modeling** | EDA notebook, non-leaking ColumnTransformer pipeline, Logistic Regression, Random Forest, Optuna-tuned XGBoost, Salary Classifier, Model Registry | *Planned (Pending Approval)* |
-| **Phase 3: Explainability** | Global SHAP beeswarm/dependence, local waterfall plots with calibrated probability conversion, what-if counterfactual helper | *Planned* |
-| **Phase 4: Fairness & Mitigation** | Fairlearn audit across gender and tier, unawareness proxy test, Reweighing, ExponentiatedGradient, ThresholdOptimizer, Pareto trade-off | *Planned* |
-| **Phase 5: Streamlit App** | 4-page UI: Prediction & What-if, Model Insights, Fairness Dashboard, About & Data Card | *Planned* |
-| **Phase 6: Quality & Delivery** | Final unit tests (80%+ coverage), complete metric population in `reports/metrics.json`, documentation verification | *Planned* |
+| :--- | :--- | :---: |
+| **Phase 1: Foundations** | Repo scaffold, config system, logging, seeding, data loader, Pydantic validation, synthetic generator with bias injection, CI workflow | **COMPLETED** |
+| **Phase 2: EDA & Modeling** | EDA notebook, non-leaking ColumnTransformer pipeline, Logistic Regression, Random Forest, Optuna-tuned XGBoost, Salary Classifier, Model Registry | **COMPLETED** |
+| **Phase 3: Explainability** | Global SHAP beeswarm/importance, local waterfall plots with calibrated probability conversion, what-if counterfactual simulator | **COMPLETED** |
+| **Phase 4: Fairness & Mitigation** | Fairlearn audit across gender and tier, unawareness proxy test, Reweighing, ExponentiatedGradient, ThresholdOptimizer, Pareto trade-off | **COMPLETED** |
+| **Phase 5: Streamlit App** | 4-page UI: Prediction & What-if, Model Insights, Fairness Dashboard, About & Data Card with dark glassmorphism design system | **COMPLETED** |
+| **Phase 6: Quality & Delivery** | 47 unit tests (80.4% coverage), Dockerfile & docker-compose, complete metrics in `reports/metrics.json`, documentation verification | **COMPLETED** |
+
+---
+
+## 6. Docker Deployment
+
+Launch the entire containerized application with a single command:
+
+```bash
+# Build and run containerized Streamlit application
+docker-compose up --build -d
+
+# Check container health and logs
+docker-compose logs -f
+
+# Access the application
+# URL: http://localhost:8501
+```
+
+---
+
+## 7. Verified Performance & Fairness Benchmarks
+
+### Placement Classification (Held-Out Test Set, N=750)
+- **Tuned XGBoost**: Test Accuracy = **89.60%**, ROC-AUC = **0.8735**, PR-AUC = **0.9762**, F1 = **0.9416**, Brier Score = **0.0773**.
+- **Random Forest**: Test Accuracy = 85.33%, ROC-AUC = 0.8755, PR-AUC = 0.9762, F1 = 0.9126.
+- **Logistic Regression**: Test Accuracy = 81.87%, ROC-AUC = 0.8926, PR-AUC = 0.9801, F1 = 0.8872.
+
+### Algorithmic Fairness Benchmark (College Tier)
+- **Baseline (Aware)**: Accuracy = 80.8%, DP Gap = 0.071, Bias Reduction = +0.0%
+- **Unawareness (Blind)**: Accuracy = 84.3%, DP Gap = 0.020, Bias Reduction = +72.2% (proxy reconstruction)
+- **Mitigated (Reweighing)**: Accuracy = **85.5%**, DP Gap = **0.027**, Bias Reduction = **+62.1%**
+- **Mitigated (ThresholdOptimizer)**: Accuracy = 84.8%, DP Gap = 0.078, Bias Reduction = -10.6%
+- **Mitigated (ExponentiatedGradient)**: Accuracy = 80.0%, DP Gap = 0.067, Bias Reduction = +5.9%
+
+$$\text{Bias Reduction \%} = \frac{\text{DP\_Diff}_{\text{baseline}} - \text{DP\_Diff}_{\text{mitigated}}}{\text{DP\_Diff}_{\text{baseline}}} \times 100\%$$
+
