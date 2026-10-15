@@ -1,0 +1,95 @@
+project:
+  name: "Campus Placement Predictor"
+  version: "0.1.0"
+  random_seed: 42
+
+paths:
+  raw_dir: "data/raw"
+  synthetic_dir: "data/synthetic"
+  processed_dir: "data/processed"
+  models_dir: "models"
+  reports_dir: "reports"
+  figures_dir: "reports/figures"
+  metrics_file: "reports/metrics.json"
+  fairness_report_file: "reports/fairness_report.md"
+
+data:
+  raw_file: "Placement_Data_Full_Class.csv"
+  synthetic_file: "synthetic_placement_data.csv"
+  synthetic_biased_file: "synthetic_placement_data_biased.csv"
+  
+features:
+  numerical:
+    - cgpa
+    - tenth_pct
+    - twelfth_pct
+    - backlogs
+    - dsa_problems_solved
+    - projects
+    - internships
+    - certifications
+    - hackathons
+    - communication_score
+    - aptitude_score
+  categorical:
+    - branch
+    - college_tier
+    - gender
+    - work_experience
+  sensitive_attributes:
+    - gender
+    - college_tier
+  targets:
+    placement: "placed"
+    salary: "salary_band"
+
+split:
+  train_size: 0.70
+  val_size: 0.15
+  test_size: 0.15
+  stratify_col: "placed"
+
+modeling:
+  cv_folds: 5
+  optuna_trials: 30
+  early_stopping_rounds: 20
+  primary_metric: "roc_auc"
+  models:
+    logistic_regression:
+      max_iter: 1000
+      class_weight: "balanced"
+    random_forest:
+      n_estimators: 200
+      max_depth: 8
+      random_state: 42
+    xgboost:
+      n_estimators: 300
+      learning_rate: 0.05
+      max_depth: 5
+      subsample: 0.8
+      colsample_bytree: 0.8
+      eval_metric: "logloss"
+
+fairness:
+  sensitive_features:
+    gender:
+      privileged: "Male"
+      unprivileged: "Female"
+    college_tier:
+      privileged: 1
+      unprivileged: 3
+  metrics:
+    - "demographic_parity_difference"
+    - "demographic_parity_ratio"
+    - "equalized_odds_difference"
+    - "selection_rate"
+    - "false_positive_rate"
+    - "false_negative_rate"
+  mitigations:
+    - "reweighing"
+    - "threshold_optimizer"
+    - "exponentiated_gradient"
+
+explainability:
+  shap_sample_size: 200
+  top_n_features: 10

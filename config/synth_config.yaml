@@ -1,0 +1,103 @@
+generation:
+  n_samples: 5000
+  random_seed: 42
+
+features:
+  cgpa:
+    mean: 7.65
+    std: 1.05
+    min: 5.0
+    max: 10.0
+  tenth_pct:
+    mean: 78.5
+    std: 9.5
+    min: 50.0
+    max: 99.0
+  twelfth_pct:
+    mean: 75.0
+    std: 10.5
+    min: 50.0
+    max: 99.0
+  backlogs_dist:
+    values: [0, 1, 2, 3, 4]
+    probs: [0.72, 0.16, 0.07, 0.03, 0.02]
+  dsa_problems_solved:
+    min: 0
+    max: 1000
+    base_mean: 220
+    base_std: 160
+  projects_dist:
+    values: [0, 1, 2, 3, 4, 5]
+    probs: [0.10, 0.25, 0.35, 0.18, 0.08, 0.04]
+  internships_dist:
+    values: [0, 1, 2, 3]
+    probs: [0.45, 0.35, 0.15, 0.05]
+  certifications_dist:
+    values: [0, 1, 2, 3, 4]
+    probs: [0.25, 0.35, 0.25, 0.10, 0.05]
+  hackathons_dist:
+    values: [0, 1, 2, 3, 4]
+    probs: [0.55, 0.25, 0.12, 0.05, 0.03]
+  communication_score:
+    mean: 71.0
+    std: 13.0
+    min: 30.0
+    max: 100.0
+  aptitude_score:
+    mean: 69.0
+    std: 14.0
+    min: 30.0
+    max: 100.0
+  branches:
+    categories:
+      - "Computer Science"
+      - "Information Technology"
+      - "Electronics & Comm"
+      - "Mechanical"
+      - "Electrical"
+      - "Civil"
+    probs: [0.35, 0.20, 0.20, 0.10, 0.10, 0.05]
+  college_tiers:
+    categories: [1, 2, 3]
+    probs: [0.15, 0.35, 0.50]
+  genders:
+    categories: ["Male", "Female"]
+    probs: [0.58, 0.42]
+  work_experience:
+    values: [0, 1]
+    probs: [0.76, 0.24]
+
+weights:
+  intercept: -4.50
+  cgpa: 3.20
+  dsa_normalized: 2.80
+  internships: 0.85
+  projects: 0.50
+  aptitude_normalized: 1.60
+  communication_normalized: 1.40
+  work_experience: 0.90
+  hackathons: 0.45
+  certifications: 0.30
+  backlogs: -1.30
+  tenth_normalized: 0.60
+  twelfth_normalized: 0.70
+  noise_std: 0.40
+
+salary_bands:
+  threshold_low: 0.40
+  threshold_mid: 0.75
+  labels:
+    low: "Low"
+    mid: "Mid"
+    high: "High"
+    unplaced: "Not Placed"
+
+bias_injection:
+  enabled: false
+  tier_penalty:
+    1: 0.0
+    2: -0.40
+    3: -1.25
+  gender_penalty:
+    "Male": 0.0
+    "Female": -0.70

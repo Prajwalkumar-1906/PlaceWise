@@ -1,0 +1,47 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint-and-test:
+    name: Code Quality and Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint with Ruff
+        run: |
+          ruff check src tests app
+
+      - name: Check formatting with Black
+        run: |
+          black --check src tests app
+
+      - name: Generate synthetic test datasets
+        run: |
+          python -m src.data.synthetic_generator --samples 1000 --output data/synthetic/synthetic_placement_data.csv
+          python -m src.data.synthetic_generator --samples 1000 --inject-bias --output data/synthetic/synthetic_placement_data_biased.csv
+
+      - name: Run unit test suite with coverage
+        run: |
+          pytest tests -v --cov=src --cov-report=term-missing --cov-fail-under=80
