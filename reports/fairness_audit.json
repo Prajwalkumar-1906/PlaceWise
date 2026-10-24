@@ -669,5 +669,531 @@
     "gender",
     "college_tier",
     "gender_x_tier"
-  ]
+  ],
+  "fairness_cis": {
+    "Baseline (Aware)": {
+      "gender": {
+        "demographic_parity_difference": {
+          "mean": 0.1126,
+          "ci_lower": 0.0846,
+          "ci_upper": 0.1264
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.8484,
+          "ci_lower": 0.8299,
+          "ci_upper": 0.8847
+        },
+        "equalized_odds_difference": {
+          "mean": 0.0956,
+          "ci_lower": 0.045,
+          "ci_upper": 0.1514
+        },
+        "selection_rates_by_group": {
+          "Female": {
+            "mean": 0.6298,
+            "ci_lower": 0.6148,
+            "ci_upper": 0.6515
+          },
+          "Male": {
+            "mean": 0.7425,
+            "ci_lower": 0.7307,
+            "ci_upper": 0.7587
+          }
+        }
+      },
+      "college_tier": {
+        "demographic_parity_difference": {
+          "mean": 0.0663,
+          "ci_lower": 0.0235,
+          "ci_upper": 0.1162
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9084,
+          "ci_lower": 0.8438,
+          "ci_upper": 0.9669
+        },
+        "equalized_odds_difference": {
+          "mean": 0.1756,
+          "ci_lower": 0.1099,
+          "ci_upper": 0.3082
+        },
+        "selection_rates_by_group": {
+          "1": {
+            "mean": 0.6621,
+            "ci_lower": 0.6264,
+            "ci_upper": 0.7326
+          },
+          "2": {
+            "mean": 0.7152,
+            "ci_lower": 0.6912,
+            "ci_upper": 0.7463
+          },
+          "3": {
+            "mean": 0.6885,
+            "ci_lower": 0.6597,
+            "ci_upper": 0.7036
+          }
+        }
+      }
+    },
+    "Unawareness (Blind)": {
+      "gender": {
+        "demographic_parity_difference": {
+          "mean": 0.0147,
+          "ci_lower": 0.0039,
+          "ci_upper": 0.025
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9832,
+          "ci_lower": 0.9716,
+          "ci_upper": 0.9955
+        },
+        "equalized_odds_difference": {
+          "mean": 0.0805,
+          "ci_lower": 0.0337,
+          "ci_upper": 0.1641
+        },
+        "selection_rates_by_group": {
+          "Female": {
+            "mean": 0.8583,
+            "ci_lower": 0.8373,
+            "ci_upper": 0.8777
+          },
+          "Male": {
+            "mean": 0.8613,
+            "ci_lower": 0.8415,
+            "ci_upper": 0.8772
+          }
+        }
+      },
+      "college_tier": {
+        "demographic_parity_difference": {
+          "mean": 0.0347,
+          "ci_lower": 0.0301,
+          "ci_upper": 0.0416
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9604,
+          "ci_lower": 0.952,
+          "ci_upper": 0.9662
+        },
+        "equalized_odds_difference": {
+          "mean": 0.1663,
+          "ci_lower": 0.0649,
+          "ci_upper": 0.3148
+        },
+        "selection_rates_by_group": {
+          "1": {
+            "mean": 0.8658,
+            "ci_lower": 0.8253,
+            "ci_upper": 0.8984
+          },
+          "2": {
+            "mean": 0.8518,
+            "ci_lower": 0.8226,
+            "ci_upper": 0.8674
+          },
+          "3": {
+            "mean": 0.8643,
+            "ci_lower": 0.8518,
+            "ci_upper": 0.877
+          }
+        }
+      }
+    },
+    "Mitigated (Reweighing)": {
+      "gender": {
+        "demographic_parity_difference": {
+          "mean": 0.0638,
+          "ci_lower": 0.0363,
+          "ci_upper": 0.0937
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9277,
+          "ci_lower": 0.895,
+          "ci_upper": 0.9586
+        },
+        "equalized_odds_difference": {
+          "mean": 0.0756,
+          "ci_lower": 0.0086,
+          "ci_upper": 0.1654
+        },
+        "selection_rates_by_group": {
+          "Female": {
+            "mean": 0.8162,
+            "ci_lower": 0.7975,
+            "ci_upper": 0.8406
+          },
+          "Male": {
+            "mean": 0.88,
+            "ci_lower": 0.8652,
+            "ci_upper": 0.8924
+          }
+        }
+      },
+      "college_tier": {
+        "demographic_parity_difference": {
+          "mean": 0.0407,
+          "ci_lower": 0.0336,
+          "ci_upper": 0.0517
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9531,
+          "ci_lower": 0.941,
+          "ci_upper": 0.961
+        },
+        "equalized_odds_difference": {
+          "mean": 0.1698,
+          "ci_lower": 0.0714,
+          "ci_upper": 0.2844
+        },
+        "selection_rates_by_group": {
+          "1": {
+            "mean": 0.8368,
+            "ci_lower": 0.8123,
+            "ci_upper": 0.8777
+          },
+          "2": {
+            "mean": 0.8647,
+            "ci_lower": 0.8409,
+            "ci_upper": 0.878
+          },
+          "3": {
+            "mean": 0.8483,
+            "ci_lower": 0.8367,
+            "ci_upper": 0.8571
+          }
+        }
+      }
+    },
+    "Mitigated (ThresholdOptimizer)": {
+      "gender": {
+        "demographic_parity_difference": {
+          "mean": 0.0808,
+          "ci_lower": 0.0428,
+          "ci_upper": 0.1173
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9069,
+          "ci_lower": 0.8657,
+          "ci_upper": 0.9503
+        },
+        "equalized_odds_difference": {
+          "mean": 0.0984,
+          "ci_lower": 0.006,
+          "ci_upper": 0.2024
+        },
+        "selection_rates_by_group": {
+          "Female": {
+            "mean": 0.7836,
+            "ci_lower": 0.7563,
+            "ci_upper": 0.8193
+          },
+          "Male": {
+            "mean": 0.8644,
+            "ci_lower": 0.8407,
+            "ci_upper": 0.8771
+          }
+        }
+      },
+      "college_tier": {
+        "demographic_parity_difference": {
+          "mean": 0.0757,
+          "ci_lower": 0.0407,
+          "ci_upper": 0.156
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.9111,
+          "ci_lower": 0.8182,
+          "ci_upper": 0.9522
+        },
+        "equalized_odds_difference": {
+          "mean": 0.185,
+          "ci_lower": 0.0415,
+          "ci_upper": 0.4101
+        },
+        "selection_rates_by_group": {
+          "1": {
+            "mean": 0.7732,
+            "ci_lower": 0.7015,
+            "ci_upper": 0.8135
+          },
+          "2": {
+            "mean": 0.8391,
+            "ci_lower": 0.8184,
+            "ci_upper": 0.8505
+          },
+          "3": {
+            "mean": 0.8365,
+            "ci_lower": 0.8121,
+            "ci_upper": 0.8579
+          }
+        }
+      }
+    },
+    "Mitigated (ExponentiatedGradient)": {
+      "gender": {
+        "demographic_parity_difference": {
+          "mean": 0.1448,
+          "ci_lower": 0.0971,
+          "ci_upper": 0.1858
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.8086,
+          "ci_lower": 0.755,
+          "ci_upper": 0.8671
+        },
+        "equalized_odds_difference": {
+          "mean": 0.1413,
+          "ci_lower": 0.063,
+          "ci_upper": 0.2359
+        },
+        "selection_rates_by_group": {
+          "Female": {
+            "mean": 0.6096,
+            "ci_lower": 0.5726,
+            "ci_upper": 0.6498
+          },
+          "Male": {
+            "mean": 0.7544,
+            "ci_lower": 0.7284,
+            "ci_upper": 0.7685
+          }
+        }
+      },
+      "college_tier": {
+        "demographic_parity_difference": {
+          "mean": 0.0761,
+          "ci_lower": 0.0508,
+          "ci_upper": 0.1083
+        },
+        "demographic_parity_ratio": {
+          "mean": 0.8939,
+          "ci_lower": 0.8502,
+          "ci_upper": 0.9289
+        },
+        "equalized_odds_difference": {
+          "mean": 0.1853,
+          "ci_lower": 0.1178,
+          "ci_upper": 0.2924
+        },
+        "selection_rates_by_group": {
+          "1": {
+            "mean": 0.6546,
+            "ci_lower": 0.6016,
+            "ci_upper": 0.7516
+          },
+          "2": {
+            "mean": 0.6885,
+            "ci_lower": 0.6692,
+            "ci_upper": 0.7192
+          },
+          "3": {
+            "mean": 0.705,
+            "ci_lower": 0.684,
+            "ci_upper": 0.7237
+          }
+        }
+      }
+    }
+  },
+  "counterfactual": {
+    "Baseline (Aware)": {
+      "gender": {
+        "sensitive_attribute": "gender",
+        "perturbation_mapping": {
+          "Male": "Female",
+          "Female": "Male"
+        },
+        "flip_rate_pct": 12.0,
+        "mean_prob_shift": 0.081,
+        "max_prob_shift": 0.2078,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (12.0% decision flips)"
+      },
+      "college_tier": {
+        "sensitive_attribute": "college_tier",
+        "perturbation_mapping": {
+          "1": "3",
+          "2": "1",
+          "3": "1"
+        },
+        "flip_rate_pct": 5.33,
+        "mean_prob_shift": 0.0351,
+        "max_prob_shift": 0.1743,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (5.3% decision flips)"
+      }
+    },
+    "Unawareness (Blind)": {
+      "gender": {
+        "sensitive_attribute": "gender",
+        "perturbation_mapping": {
+          "Male": "Female",
+          "Female": "Male"
+        },
+        "flip_rate_pct": 0.0,
+        "mean_prob_shift": 0.0,
+        "max_prob_shift": 0.0,
+        "is_counterfactually_fair": true,
+        "status": "Counterfactually invariant (attribute excluded from input features)"
+      },
+      "college_tier": {
+        "sensitive_attribute": "college_tier",
+        "perturbation_mapping": {
+          "1": "3",
+          "2": "1",
+          "3": "1"
+        },
+        "flip_rate_pct": 0.0,
+        "mean_prob_shift": 0.0,
+        "max_prob_shift": 0.0,
+        "is_counterfactually_fair": true,
+        "status": "Counterfactually invariant (attribute excluded from input features)"
+      }
+    },
+    "Mitigated (Reweighing)": {
+      "gender": {
+        "sensitive_attribute": "gender",
+        "perturbation_mapping": {
+          "Male": "Female",
+          "Female": "Male"
+        },
+        "flip_rate_pct": 7.2,
+        "mean_prob_shift": 0.0728,
+        "max_prob_shift": 0.3012,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (7.2% decision flips)"
+      },
+      "college_tier": {
+        "sensitive_attribute": "college_tier",
+        "perturbation_mapping": {
+          "1": "3",
+          "2": "1",
+          "3": "1"
+        },
+        "flip_rate_pct": 1.07,
+        "mean_prob_shift": 0.0137,
+        "max_prob_shift": 0.1041,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (1.1% decision flips)"
+      }
+    },
+    "Mitigated (ExponentiatedGradient)": {
+      "gender": {
+        "sensitive_attribute": "gender",
+        "perturbation_mapping": {
+          "Male": "Female",
+          "Female": "Male"
+        },
+        "flip_rate_pct": 13.87,
+        "mean_prob_shift": 0.1387,
+        "max_prob_shift": 1.0,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (13.9% decision flips)"
+      },
+      "college_tier": {
+        "sensitive_attribute": "college_tier",
+        "perturbation_mapping": {
+          "1": "3",
+          "2": "1",
+          "3": "1"
+        },
+        "flip_rate_pct": 2.4,
+        "mean_prob_shift": 0.024,
+        "max_prob_shift": 1.0,
+        "is_counterfactually_fair": false,
+        "status": "Counterfactual Disparity Detected (2.4% decision flips)"
+      }
+    },
+    "Mitigated (ThresholdOptimizer)": {
+      "college_tier": {
+        "sensitive_attribute": "college_tier",
+        "flip_rate_pct": 11.07,
+        "mean_prob_shift": 0.0,
+        "max_prob_shift": 0.0,
+        "is_counterfactually_fair": false,
+        "status": "Threshold shift across demographic groups (11.07% flipped)"
+      },
+      "gender": {
+        "sensitive_attribute": "gender",
+        "flip_rate_pct": 0.0,
+        "mean_prob_shift": 0.0,
+        "max_prob_shift": 0.0,
+        "is_counterfactually_fair": true,
+        "status": "Counterfactually invariant (thresholding keyed on tier)"
+      }
+    }
+  },
+  "proxy_leakage": {
+    "gender": {
+      "sensitive_attribute": "gender",
+      "is_binary": true,
+      "classes": [
+        "Female",
+        "Male"
+      ],
+      "proxy_roc_auc": 0.4607,
+      "accuracy": 0.5156,
+      "macro_f1": 0.4729,
+      "verdict": "Moderate / Low Proxy Leakage",
+      "top_predictive_proxies": [
+        {
+          "feature": "dsa_problems_solved",
+          "importance": 172
+        },
+        {
+          "feature": "aptitude_score",
+          "importance": 169
+        },
+        {
+          "feature": "twelfth_pct",
+          "importance": 153
+        },
+        {
+          "feature": "communication_score",
+          "importance": 130
+        },
+        {
+          "feature": "tenth_pct",
+          "importance": 118
+        }
+      ]
+    },
+    "college_tier": {
+      "sensitive_attribute": "college_tier",
+      "is_binary": false,
+      "classes": [
+        "1",
+        "2",
+        "3"
+      ],
+      "proxy_roc_auc": 0.4955,
+      "accuracy": 0.4889,
+      "macro_f1": 0.3559,
+      "verdict": "Moderate / Low Proxy Leakage",
+      "top_predictive_proxies": [
+        {
+          "feature": "cgpa",
+          "importance": 513
+        },
+        {
+          "feature": "dsa_problems_solved",
+          "importance": 450
+        },
+        {
+          "feature": "aptitude_score",
+          "importance": 411
+        },
+        {
+          "feature": "communication_score",
+          "importance": 402
+        },
+        {
+          "feature": "tenth_pct",
+          "importance": 400
+        }
+      ]
+    }
+  }
 }

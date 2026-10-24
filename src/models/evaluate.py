@@ -3,6 +3,9 @@
 from pathlib import Path
 from typing import Any
 
+import matplotlib
+
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.calibration import calibration_curve
@@ -140,8 +143,8 @@ def plot_roc_pr_curves(
         plt.plot(fpr, tpr, lw=2, label=f"{name} (AUC = {auc:.3f})")
 
     plt.plot([0, 1], [0, 1], "k--", lw=1.5, label="Random Chance (AUC = 0.500)")
-    plt.xlim([0.0, 1.0])
-    plt.ylim([0.0, 1.05])
+    plt.xlim(0.0, 1.0)
+    plt.ylim(0.0, 1.05)
     plt.xlabel("False Positive Rate", fontsize=11)
     plt.ylabel("True Positive Rate (Recall)", fontsize=11)
     plt.title("Receiver Operating Characteristic (ROC) Comparison", fontsize=13, fontweight="bold")

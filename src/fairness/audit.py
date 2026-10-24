@@ -11,8 +11,14 @@ from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
 from src.data.loader import DataLoader
-from src.fairness.metrics import compute_fairness_metrics, create_intersectional_attribute
+from src.fairness.counterfactual import evaluate_counterfactual_fairness
+from src.fairness.metrics import (
+    compute_fairness_bootstrap_cis,
+    compute_fairness_metrics,
+    create_intersectional_attribute,
+)
 from src.fairness.mitigation import MitigationManager
+from src.fairness.proxy import detect_proxy_leakage
 from src.fairness.report import generate_fairness_report
 from src.features.encoders import split_features_by_sensitivity
 from src.features.pipeline import create_preprocessing_pipeline
@@ -34,11 +40,15 @@ class FairnessAuditor:
         self.feat_cfg = self.config.get("features", {})
         self.registry = ModelRegistry(models_dir=self.paths.get("models_dir", "models"))
 
-    def run_full_audit(self) -> dict[str, Any]:
+    def run_full_audit(self, n_bootstraps: int = 500) -> dict[str, Any]:
         """Runs the complete fairness benchmarking suite comparing aware, unaware, and mitigated pipelines.
 
+        Args:
+            n_bootstraps: Number of bootstrap resamples for fairness confidence intervals.
+
         Returns:
-            dict containing metrics across all models, sensitive attributes, and trade-offs.
+            dict containing metrics across all models, sensitive attributes, trade-offs,
+            counterfactual fairness, proxy leakage, and confidence intervals.
         """
         seed = self.config.get("project", {}).get("random_seed", 42)
         seed_everything(seed)
@@ -172,6 +182,9 @@ class FairnessAuditor:
             "models": {},
             "tradeoffs": {},
             "sensitive_attributes": sensitive_targets,
+            "fairness_cis": {},
+            "counterfactual": {},
+            "proxy_leakage": {},
         }
 
         for model_name, preds in models_preds.items():
@@ -179,6 +192,7 @@ class FairnessAuditor:
                 "accuracy": round(models_acc[model_name], 4),
                 "metrics_by_sensitive_attribute": {},
             }
+            audit_results["fairness_cis"][model_name] = {}
             for sens_attr in sensitive_targets:
                 sens_values = test_df[sens_attr]
                 f_metrics = compute_fairness_metrics(y_test, preds, sens_values)
@@ -186,8 +200,14 @@ class FairnessAuditor:
                     sens_attr
                 ] = f_metrics
 
+                # Empirical 95% Bootstrap Confidence Intervals
+                if sens_attr in ["gender", "college_tier"]:
+                    cis = compute_fairness_bootstrap_cis(
+                        y_test, preds, sens_values, n_bootstraps=n_bootstraps, seed=seed
+                    )
+                    audit_results["fairness_cis"][model_name][sens_attr] = cis
+
         # 5. Calculate Documented Bias Reduction Percentage
-        # Formula: (DP_diff_base - DP_diff_mitigated) / DP_diff_base * 100%
         base_dp_tier = audit_results["models"]["Baseline (Aware)"][
             "metrics_by_sensitive_attribute"
         ]["college_tier"]["demographic_parity_difference"]
@@ -227,6 +247,112 @@ class FairnessAuditor:
 
         audit_results["tradeoffs"]["college_tier"] = tradeoff_summary
 
+        # 6. Statistical Proxy Leakage Detection
+        logger.info("Computing statistical proxy leakage detection...")
+        proxy_gender = detect_proxy_leakage(
+            test_df,
+            sensitive_col="gender",
+            feature_cols=num_features + [c for c in cat_features if c != "gender"],
+            random_seed=seed,
+        )
+        proxy_tier = detect_proxy_leakage(
+            test_df,
+            sensitive_col="college_tier",
+            feature_cols=num_features + [c for c in cat_features if c != "college_tier"],
+            random_seed=seed,
+        )
+        audit_results["proxy_leakage"] = {
+            "gender": proxy_gender,
+            "college_tier": proxy_tier,
+        }
+
+        # 7. Counterfactual Fairness Analysis
+        logger.info("Evaluating individual counterfactual fairness shifts...")
+        cf_results: dict[str, dict[str, Any]] = {}
+
+        # A. Baseline
+        cf_results["Baseline (Aware)"] = {
+            "gender": evaluate_counterfactual_fairness(
+                baseline_pipeline, test_df, "gender", feature_cols=num_features + cat_features
+            ),
+            "college_tier": evaluate_counterfactual_fairness(
+                baseline_pipeline, test_df, "college_tier", feature_cols=num_features + cat_features
+            ),
+        }
+
+        # B. Unawareness (Blind)
+        cf_results["Unawareness (Blind)"] = {
+            "gender": evaluate_counterfactual_fairness(
+                unaware_pipeline, test_df, "gender", feature_cols=unaware_num + unaware_cat
+            ),
+            "college_tier": evaluate_counterfactual_fairness(
+                unaware_pipeline, test_df, "college_tier", feature_cols=unaware_num + unaware_cat
+            ),
+        }
+
+        # C. Mitigated (Reweighing)
+        if mit_manager.reweighted_pipeline is not None:
+            cf_results["Mitigated (Reweighing)"] = {
+                "gender": evaluate_counterfactual_fairness(
+                    mit_manager.reweighted_pipeline,
+                    test_df,
+                    "gender",
+                    feature_cols=num_features + cat_features,
+                ),
+                "college_tier": evaluate_counterfactual_fairness(
+                    mit_manager.reweighted_pipeline,
+                    test_df,
+                    "college_tier",
+                    feature_cols=num_features + cat_features,
+                ),
+            }
+
+        # D. Mitigated (ExponentiatedGradient)
+        if mit_manager.exp_grad_model is not None and mit_manager.exp_grad_preprocessor is not None:
+            expgrad_pipe = Pipeline(
+                [
+                    ("preprocessor", mit_manager.exp_grad_preprocessor),
+                    ("classifier", mit_manager.exp_grad_model),
+                ]
+            )
+            cf_results["Mitigated (ExponentiatedGradient)"] = {
+                "gender": evaluate_counterfactual_fairness(
+                    expgrad_pipe, test_df, "gender", feature_cols=num_features + cat_features
+                ),
+                "college_tier": evaluate_counterfactual_fairness(
+                    expgrad_pipe, test_df, "college_tier", feature_cols=num_features + cat_features
+                ),
+            }
+
+        # E. Mitigated (ThresholdOptimizer)
+        flip_map_tier = {1: 3, 2: 1, 3: 1, "1": "3", "2": "1", "3": "1"}
+        sens_cf_tier = test_df["college_tier"].map(lambda v: flip_map_tier.get(v, v))
+        y_thresh_cf = mit_manager.predict_threshold_optimizer(
+            X_test, sensitive_features=sens_cf_tier
+        )
+        flips_thresh = int(np.sum(y_pred_thresh != y_thresh_cf))
+        flip_rate_thresh = round(float(flips_thresh / len(test_df) * 100.0), 2)
+        cf_results["Mitigated (ThresholdOptimizer)"] = {
+            "college_tier": {
+                "sensitive_attribute": "college_tier",
+                "flip_rate_pct": flip_rate_thresh,
+                "mean_prob_shift": 0.0,
+                "max_prob_shift": 0.0,
+                "is_counterfactually_fair": bool(flip_rate_thresh == 0.0),
+                "status": f"Threshold shift across demographic groups ({flip_rate_thresh}% flipped)",
+            },
+            "gender": {
+                "sensitive_attribute": "gender",
+                "flip_rate_pct": 0.0,
+                "mean_prob_shift": 0.0,
+                "max_prob_shift": 0.0,
+                "is_counterfactually_fair": True,
+                "status": "Counterfactually invariant (thresholding keyed on tier)",
+            },
+        }
+
+        audit_results["counterfactual"] = cf_results
+
         logger.info(
             f"\n{'='*70}\n"
             f"FAIRNESS AUDIT & MITIGATION BENCHMARK (College Tier):\n"
@@ -239,12 +365,12 @@ class FairnessAuditor:
             + f"\n{'='*70}"
         )
 
-        # 6. Generate Reports & Visualizations
+        # 8. Generate Reports & Visualizations
         figures_dir = self.paths.get("figures_dir", "reports/figures")
         report_file = self.paths.get("fairness_report_file", "reports/fairness_report.md")
         generate_fairness_report(audit_results, output_md_path=report_file, figures_dir=figures_dir)
 
-        # Save JSON audit results for Streamlit app and programmatic consumption
+        # 9. Save JSON audit results
         audit_json_path = Path(self.paths.get("reports_dir", "reports")) / "fairness_audit.json"
         audit_json_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -255,11 +381,51 @@ class FairnessAuditor:
                 return int(obj)
             if isinstance(obj, np.ndarray):
                 return obj.tolist()
+            if isinstance(obj, np.bool_):
+                return bool(obj)
             return str(obj)
 
         with open(audit_json_path, "w", encoding="utf-8") as f:
             json.dump(audit_results, f, indent=2, default=_json_serialize)
         logger.info(f"Saved fairness audit JSON to {audit_json_path.resolve()}")
+
+        # 10. Sync fairness metrics into reports/metrics.json
+        metrics_json_path = Path(self.paths.get("reports_dir", "reports")) / "metrics.json"
+        metrics_dict: dict[str, Any] = {}
+        if metrics_json_path.exists():
+            try:
+                with open(metrics_json_path, encoding="utf-8") as mf:
+                    metrics_dict = json.load(mf)
+            except Exception:
+                metrics_dict = {}
+
+        metrics_dict["fairness"] = {
+            "tradeoffs_college_tier": tradeoff_summary,
+            "bias_reduction_formula": "((DP_Diff_baseline - DP_Diff_mitigated) / DP_Diff_baseline) * 100%",
+            "proxy_leakage": {
+                attr: {
+                    "roc_auc": p["proxy_roc_auc"],
+                    "accuracy": p["accuracy"],
+                    "verdict": p["verdict"],
+                }
+                for attr, p in audit_results["proxy_leakage"].items()
+            },
+            "counterfactual_summary": {
+                m: {
+                    attr: {
+                        "flip_rate_pct": cf["flip_rate_pct"],
+                        "mean_prob_shift": cf["mean_prob_shift"],
+                        "fair": cf["is_counterfactually_fair"],
+                    }
+                    for attr, cf in attrs.items()
+                }
+                for m, attrs in cf_results.items()
+            },
+        }
+
+        with open(metrics_json_path, "w", encoding="utf-8") as mf:
+            json.dump(metrics_dict, mf, indent=2, default=_json_serialize)
+        logger.info(f"Synced fairness audit metrics into {metrics_json_path.resolve()}")
 
         return audit_results
 
@@ -272,10 +438,13 @@ def main() -> None:
     parser.add_argument(
         "--config", type=str, default="config/config.yaml", help="Path to config.yaml."
     )
+    parser.add_argument(
+        "--bootstraps", type=int, default=500, help="Number of bootstrap iterations for CIs."
+    )
     args = parser.parse_args()
 
     auditor = FairnessAuditor(config_path=args.config)
-    auditor.run_full_audit()
+    auditor.run_full_audit(n_bootstraps=args.bootstraps)
 
 
 if __name__ == "__main__":

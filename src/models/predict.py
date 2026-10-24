@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from src.data.validation import StudentRecord, validate_dataframe
+from src.models.calibration import classify_hitl_confidence
 from src.models.registry import ModelRegistry
 from src.utils.logger import get_logger
 
@@ -14,7 +15,7 @@ logger = get_logger(__name__)
 
 
 class PlacementPredictor:
-    """Provides inference methods for placement probability, risk level, and salary compensation bands."""
+    """Provides inference methods for placement probability, risk level, salary bands, and HITL abstention."""
 
     def __init__(
         self,
@@ -41,7 +42,8 @@ class PlacementPredictor:
             student_data: Dictionary matching StudentRecord schema.
 
         Returns:
-            Dictionary containing placement_prob, placement_pred, risk_label, and salary_band.
+            Dictionary containing placement_prob, placement_pred, risk_label, salary_band,
+            and human-in-the-loop abstention details.
         """
         # Validate schema
         record = StudentRecord(**student_data)
@@ -62,6 +64,9 @@ class PlacementPredictor:
             risk_label = "High Risk / Attention Required"
             risk_color = "red"
 
+        # Human-in-the-loop uncertainty band
+        hitl = classify_hitl_confidence(prob, lower_threshold=0.35, upper_threshold=0.65)
+
         # Salary band prediction (only if placed)
         salary_band = "Not Placed"
         if pred == 1 and self.salary_pipeline is not None:
@@ -78,6 +83,10 @@ class PlacementPredictor:
             "risk_label": risk_label,
             "risk_color": risk_color,
             "salary_band": salary_band,
+            "confidence_band": hitl["confidence_band"],
+            "needs_human_review": hitl["needs_human_review"],
+            "hitl_recommendation": hitl["recommendation"],
+            "hitl_status": hitl["status"],
         }
 
     def predict_batch(self, df: pd.DataFrame) -> pd.DataFrame:
@@ -87,7 +96,7 @@ class PlacementPredictor:
             df: DataFrame containing student profiles.
 
         Returns:
-            DataFrame augmented with prediction columns.
+            DataFrame augmented with prediction and uncertainty columns.
         """
         is_valid, errors = validate_dataframe(df, require_targets=False)
         if not is_valid:
@@ -100,9 +109,19 @@ class PlacementPredictor:
         df_out["predicted_placement_probability"] = np.round(probs, 4)
         df_out["predicted_placement"] = preds
 
+        # HITL confidence annotations
+        hitl_bands = []
+        needs_review = []
+        for p in probs:
+            h = classify_hitl_confidence(p, lower_threshold=0.35, upper_threshold=0.65)
+            hitl_bands.append(h["confidence_band"])
+            needs_review.append(h["needs_human_review"])
+
+        df_out["confidence_band"] = hitl_bands
+        df_out["needs_human_review"] = needs_review
+
         if self.salary_pipeline is not None:
             salary_preds = self.salary_pipeline.predict(df)
-            # Assign 'Not Placed' where predicted placement is 0
             df_out["predicted_salary_band"] = np.where(preds == 1, salary_preds, "Not Placed")
 
         return df_out

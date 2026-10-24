@@ -154,3 +154,31 @@ def test_train_models_execution():
     assert "logistic_regression" in results["test"]
     assert "random_forest" in results["test"]
     assert results["test"]["xgboost"]["roc_auc"] > 0.70
+
+
+def test_tune_xgboost_fast():
+    """Verify Optuna tuning executes and returns valid hyperparameters."""
+    from src.models.tune import tune_xgboost
+
+    rng = np.random.default_rng(42)
+    n = 40
+    X = pd.DataFrame(
+        {
+            "cgpa": rng.uniform(6.0, 9.5, size=n),
+            "dsa_problems_solved": rng.integers(50, 400, size=n).astype(float),
+            "branch": rng.choice(["Computer Science", "Information Technology"], size=n),
+        }
+    )
+    y = pd.Series(rng.choice([0, 1], size=n, p=[0.4, 0.6]), name="placed")
+    best_params, best_score = tune_xgboost(
+        X_train=X,
+        y_train=y,
+        numerical_features=["cgpa", "dsa_problems_solved"],
+        categorical_features=["branch"],
+        n_trials=2,
+        cv_folds=2,
+        random_seed=42,
+    )
+    assert isinstance(best_params, dict)
+    assert "max_depth" in best_params
+    assert 0.0 <= best_score <= 1.0

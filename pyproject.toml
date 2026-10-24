@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "placement-predictor"
 version = "0.1.0"
-description = "Campus Placement Predictor with Explainability (SHAP) and Fairness Audit (Fairlearn)"
+description = "Campus Placement Predictor with Explainability (SHAP), Fairness Audit (Fairlearn), Uncertainty Quantification & Monitoring"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
@@ -23,12 +23,12 @@ classifiers = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["src*"]
+include = ["src*", "api*"]
 
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["notebooks/*"]
+extend-exclude = ["notebooks/*", "site/*"]
 
 [tool.ruff.lint]
 select = [
@@ -59,7 +59,7 @@ testpaths = ["tests"]
 pythonpath = ["."]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["src", "api"]
 omit = [
     "tests/*",
     "notebooks/*",
@@ -69,3 +69,12 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 fail_under = 80
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+check_untyped_defs = true

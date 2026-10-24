@@ -93,3 +93,26 @@ fairness:
 explainability:
   shap_sample_size: 200
   top_n_features: 10
+
+mlflow:
+  experiment_name: "PlaceWise-Placement-Prediction"
+  tracking_uri: "sqlite:///mlruns.db"
+  artifact_location: "mlruns"
+  registered_model_name: "PlaceWise_XGBoost_Placement"
+  promotion:
+    min_roc_auc: 0.85
+    min_f1: 0.88
+    max_brier_score: 0.12
+    max_demographic_parity_diff: 0.10
+
+uncertainty:
+  calibration_methods:
+    - "sigmoid"
+    - "isotonic"
+  conformal:
+    significance_level: 0.10  # 90% marginal coverage
+  hitl:
+    lower_threshold: 0.35
+    upper_threshold: 0.65
+
+

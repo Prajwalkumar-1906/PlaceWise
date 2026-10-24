@@ -107,3 +107,104 @@ def compute_fairness_metrics(
         "overall_accuracy": round(float(accuracy_score(y_t, y_p)), 4),
         "by_group": by_group_dict,
     }
+
+
+def compute_fairness_bootstrap_cis(
+    y_true: np.ndarray | pd.Series,
+    y_pred: np.ndarray | pd.Series,
+    sensitive_features: np.ndarray | pd.Series,
+    n_bootstraps: int = 1000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> dict[str, Any]:
+    """Calculates empirical bootstrap 95% confidence intervals for Fairlearn metrics.
+
+    Args:
+        y_true: Ground truth binary labels.
+        y_pred: Predicted binary labels.
+        sensitive_features: Sensitive attribute series or array.
+        n_bootstraps: Number of bootstrap iterations.
+        alpha: Significance level (default 0.05 for 95% CI).
+        seed: Random seed for reproducibility.
+
+    Returns:
+        dict containing point estimate, mean, and [lower, upper] empirical bounds.
+    """
+    y_t = np.array(y_true).astype(int)
+    y_p = np.array(y_pred).astype(int)
+    sens = np.array(sensitive_features).astype(str)
+    n = len(y_t)
+
+    unique_groups = sorted(set(sens))
+    rng = np.random.default_rng(seed)
+
+    dp_diffs: list[float] = []
+    dp_ratios: list[float] = []
+    eo_diffs: list[float] = []
+    sel_rates: dict[str, list[float]] = {g: [] for g in unique_groups}
+
+    for _ in range(n_bootstraps):
+        idx = rng.choice(n, size=n, replace=True)
+        yt_b = y_t[idx]
+        yp_b = y_p[idx]
+        sens_b = sens[idx]
+
+        group_srs: list[float] = []
+        group_tprs: list[float] = []
+        group_fprs: list[float] = []
+        valid = True
+
+        for g in unique_groups:
+            g_mask = sens_b == g
+            n_g = np.sum(g_mask)
+            if n_g == 0:
+                valid = False
+                break
+            sr = float(np.mean(yp_b[g_mask]))
+            group_srs.append(sr)
+
+            y1_g = g_mask & (yt_b == 1)
+            y0_g = g_mask & (yt_b == 0)
+            n_y1 = np.sum(y1_g)
+            n_y0 = np.sum(y0_g)
+            if n_y1 == 0 or n_y0 == 0:
+                valid = False
+                break
+            group_tprs.append(float(np.mean(yp_b[y1_g])))
+            group_fprs.append(float(np.mean(yp_b[y0_g])))
+
+        if not valid:
+            continue
+
+        for i, g in enumerate(unique_groups):
+            sel_rates[g].append(group_srs[i])
+
+        dp_d = max(group_srs) - min(group_srs)
+        max_sr = max(group_srs)
+        dp_r = (min(group_srs) / max_sr) if max_sr > 1e-6 else 1.0
+        eo_d = max(max(group_tprs) - min(group_tprs), max(group_fprs) - min(group_fprs))
+
+        dp_diffs.append(dp_d)
+        dp_ratios.append(dp_r)
+        eo_diffs.append(eo_d)
+
+    def _calc_ci(values: list[float]) -> dict[str, float]:
+        if not values:
+            return {"point": 0.0, "ci_lower": 0.0, "ci_upper": 0.0}
+        arr = np.array(values)
+        low = float(np.percentile(arr, 100 * (alpha / 2.0)))
+        high = float(np.percentile(arr, 100 * (1.0 - alpha / 2.0)))
+        return {
+            "mean": round(float(np.mean(arr)), 4),
+            "ci_lower": round(low, 4),
+            "ci_upper": round(high, 4),
+        }
+
+    ci_results: dict[str, Any] = {
+        "demographic_parity_difference": _calc_ci(dp_diffs),
+        "demographic_parity_ratio": _calc_ci(dp_ratios),
+        "equalized_odds_difference": _calc_ci(eo_diffs),
+        "selection_rates_by_group": {g: _calc_ci(sel_rates[g]) for g in unique_groups},
+    }
+
+    return ci_results

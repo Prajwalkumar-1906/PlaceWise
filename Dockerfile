@@ -1,4 +1,4 @@
-# Production Dockerfile for Campus Placement Predictor & Fairness Audit App
+# Production Dockerfile for Campus Placement Predictor, API & UI
 FROM python:3.11-slim
 
 # Set environment variables
@@ -22,6 +22,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy application source code and artifacts
 COPY src/ ./src/
+COPY api/ ./api/
 COPY app/ ./app/
 COPY config/ ./config/
 COPY models/ ./models/
@@ -30,15 +31,16 @@ COPY data/ ./data/
 
 # Create unprivileged user for security
 RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/logs && \
     chown -R appuser:appuser /app
 USER appuser
 
-# Expose Streamlit default port
-EXPOSE 8501
+# Expose ports: 8000 (FastAPI), 8501 (Streamlit)
+EXPOSE 8000 8501
 
 # Container healthcheck
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD curl --fail http://localhost:8501/_stcore/health || exit 1
+    CMD curl --fail http://localhost:8000/health || curl --fail http://localhost:8501/_stcore/health || exit 1
 
-# Launch Streamlit server
-ENTRYPOINT ["streamlit", "run", "app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.gatherUsageStats=false"]
+# Default launch command (Streamlit UI; docker-compose overrides for API)
+CMD ["streamlit", "run", "app/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0", "--server.headless=true", "--browser.gatherUsageStats=false"]

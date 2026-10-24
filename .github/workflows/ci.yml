@@ -7,12 +7,12 @@ on:
     branches: [main, master]
 
 jobs:
-  lint-and-test:
-    name: Code Quality and Tests
+  lint-typecheck-and-test:
+    name: Quality, Types, and Tests
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.11", "3.12"]
+        python-version: ["3.10", "3.11", "3.12"]
 
     steps:
       - name: Checkout code
@@ -31,17 +31,45 @@ jobs:
 
       - name: Lint with Ruff
         run: |
-          ruff check src tests app
+          ruff check src tests app api
 
       - name: Check formatting with Black
         run: |
-          black --check src tests app
+          black --check src tests app api
 
-      - name: Generate synthetic test datasets
+      - name: Static type checking with Mypy
         run: |
-          python -m src.data.synthetic_generator --samples 1000 --output data/synthetic/synthetic_placement_data.csv
-          python -m src.data.synthetic_generator --samples 1000 --inject-bias --output data/synthetic/synthetic_placement_data_biased.csv
+          mypy src api
 
-      - name: Run unit test suite with coverage
+      - name: Generate synthetic dataset & pipeline clean data
         run: |
-          pytest tests -v --cov=src --cov-report=term-missing --cov-fail-under=80
+          python -m src.data.generate_synthetic --samples 1500 --output data/synthetic/synthetic_placement_data.csv
+          python -m src.data.generate_synthetic --samples 1500 --inject-bias --output data/synthetic/synthetic_placement_data_biased.csv
+          python -m src.data.loader
+          python -m src.data.manifest
+
+      - name: Train baseline and production models
+        run: |
+          python -m src.models.train
+
+      - name: Run unit and integration test suite with coverage
+        run: |
+          pytest tests -v --cov=src --cov=api --cov-report=term-missing --cov-fail-under=80
+
+  docker-build-check:
+    name: Docker Container Build Check
+    runs-on: ubuntu-latest
+    needs: lint-typecheck-and-test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: false
+          tags: placewise:latest

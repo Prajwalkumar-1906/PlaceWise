@@ -40,7 +40,7 @@ def split_features_by_sensitivity(
     numerical_features: list[str],
     categorical_features: list[str],
     sensitive_features: list[str],
-) -> dict[str, list[str]]:
+) -> dict[str, dict[str, list[str]]]:
     """Splits feature definitions into standard and sensitive-unaware subsets.
 
     Used in Phase 4 fairness audit to train models with 'fairness through unawareness'.

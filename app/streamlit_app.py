@@ -8,11 +8,11 @@ if str(PROJECT_ROOT) not in sys.path:
 
 import streamlit as st
 
-from app.components.ui import apply_custom_css
+from app.components.ui import apply_custom_css, render_provenance_footer
 
 # Page Configuration (Must be first Streamlit call)
 st.set_page_config(
-    page_title="Campus Placement Predictor & Fairness Audit",
+    page_title="PlaceWise - Campus Placement Predictor & Governance Suite",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -30,10 +30,10 @@ with st.sidebar:
                 <span style="font-size: 2rem;">🎓</span>
                 <div>
                     <h3 style="margin: 0; font-size: 1.15rem; font-weight: 800; color: #F8FAFC; letter-spacing: -0.01em;">
-                        Placement Predictor
+                        PlaceWise AI
                     </h3>
                     <div style="font-size: 0.78rem; color: #818CF8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
-                        Explainability & Fairness
+                        Explainability & Governance
                     </div>
                 </div>
             </div>
@@ -49,8 +49,9 @@ with st.sidebar:
                 System Health Status
             </div>
             <div style="font-size: 0.82rem; color: #34D399; margin-bottom: 4px;">● Tuned XGBoost: <b>Online</b></div>
-            <div style="font-size: 0.82rem; color: #34D399; margin-bottom: 4px;">● SHAP TreeExplainer: <b>Active</b></div>
-            <div style="font-size: 0.82rem; color: #34D399;">● Fairlearn Auditor: <b>Loaded</b></div>
+            <div style="font-size: 0.82rem; color: #34D399; margin-bottom: 4px;">● Platt Calibration: <b>Active</b></div>
+            <div style="font-size: 0.82rem; color: #34D399; margin-bottom: 4px;">● SHAP TreeExplainer: <b>Loaded</b></div>
+            <div style="font-size: 0.82rem; color: #34D399;">● Evidently Monitoring: <b>Surveilling</b></div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -83,6 +84,11 @@ pages = {
             icon="⚖️",
         ),
         st.Page(
+            str(PAGES_DIR / "5_📈_Monitoring.py"),
+            title="Surveillance & Drift",
+            icon="📈",
+        ),
+        st.Page(
             str(PAGES_DIR / "4_ℹ️_About.py"),
             title="About & Provenance",
             icon="ℹ️",
@@ -93,8 +99,9 @@ pages = {
 nav = st.navigation(pages)
 nav.run()
 
+# Global Provenance Footer
+render_provenance_footer()
+
 with st.sidebar:
     st.markdown("---")
-    st.caption(
-        "Campus Placement Predictor v0.1.0 • Built with Streamlit, XGBoost, SHAP, & Fairlearn."
-    )
+    st.caption("PlaceWise AI v0.1.0 • Built with Streamlit, FastAPI, XGBoost, SHAP, & Fairlearn.")

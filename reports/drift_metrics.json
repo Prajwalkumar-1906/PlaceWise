@@ -1,0 +1,179 @@
+{
+  "scenario": "cgpa_inflation",
+  "cohort_size": 600,
+  "feature_drift": {
+    "total_features": 15,
+    "drifted_features_count": 4,
+    "drift_share_pct": 26.7,
+    "dataset_drift_detected": false,
+    "features": {
+      "cgpa": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.338,
+        "p_value": 0.0,
+        "wasserstein_distance": 0.867,
+        "reference_mean": 7.56,
+        "current_mean": 8.42,
+        "mean_shift": 0.87,
+        "drift_detected": true
+      },
+      "tenth_pct": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.2019,
+        "p_value": 0.0,
+        "wasserstein_distance": 4.1316,
+        "reference_mean": 78.33,
+        "current_mean": 82.46,
+        "mean_shift": 4.13,
+        "drift_detected": true
+      },
+      "twelfth_pct": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.248,
+        "p_value": 0.0,
+        "wasserstein_distance": 5.7247,
+        "reference_mean": 77.04,
+        "current_mean": 82.76,
+        "mean_shift": 5.72,
+        "drift_detected": true
+      },
+      "backlogs": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0143,
+        "p_value": 0.9999,
+        "wasserstein_distance": 0.0397,
+        "reference_mean": 0.49,
+        "current_mean": 0.45,
+        "mean_shift": -0.04,
+        "drift_detected": false
+      },
+      "dsa_problems_solved": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0277,
+        "p_value": 0.81505,
+        "wasserstein_distance": 8.3714,
+        "reference_mean": 216.1,
+        "current_mean": 210.46,
+        "mean_shift": -5.64,
+        "drift_detected": false
+      },
+      "projects": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0252,
+        "p_value": 0.89105,
+        "wasserstein_distance": 0.0841,
+        "reference_mean": 2.04,
+        "current_mean": 1.99,
+        "mean_shift": -0.06,
+        "drift_detected": false
+      },
+      "internships": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0274,
+        "p_value": 0.82619,
+        "wasserstein_distance": 0.0469,
+        "reference_mean": 0.8,
+        "current_mean": 0.85,
+        "mean_shift": 0.05,
+        "drift_detected": false
+      },
+      "certifications": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0264,
+        "p_value": 0.85804,
+        "wasserstein_distance": 0.0614,
+        "reference_mean": 1.34,
+        "current_mean": 1.4,
+        "mean_shift": 0.06,
+        "drift_detected": false
+      },
+      "hackathons": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0554,
+        "p_value": 0.08259,
+        "wasserstein_distance": 0.1113,
+        "reference_mean": 0.8,
+        "current_mean": 0.69,
+        "mean_shift": -0.11,
+        "drift_detected": false
+      },
+      "communication_score": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.0385,
+        "p_value": 0.4231,
+        "wasserstein_distance": 0.5431,
+        "reference_mean": 70.47,
+        "current_mean": 70.12,
+        "mean_shift": -0.35,
+        "drift_detected": false
+      },
+      "aptitude_score": {
+        "type": "numerical",
+        "test_name": "Kolmogorov-Smirnov (2-sample)",
+        "statistic": 0.054,
+        "p_value": 0.09652,
+        "wasserstein_distance": 0.8222,
+        "reference_mean": 71.76,
+        "current_mean": 71.64,
+        "mean_shift": -0.12,
+        "drift_detected": false
+      },
+      "branch": {
+        "type": "categorical",
+        "test_name": "Chi-Squared Independence",
+        "statistic": 8.0568,
+        "p_value": 0.15313,
+        "drift_detected": false
+      },
+      "college_tier": {
+        "type": "categorical",
+        "test_name": "Chi-Squared Independence",
+        "statistic": 0.8639,
+        "p_value": 0.64924,
+        "drift_detected": false
+      },
+      "gender": {
+        "type": "categorical",
+        "test_name": "Chi-Squared Independence",
+        "statistic": 0.3929,
+        "p_value": 0.53077,
+        "drift_detected": false
+      },
+      "work_experience": {
+        "type": "categorical",
+        "test_name": "Chi-Squared Independence",
+        "statistic": 7.737,
+        "p_value": 0.00541,
+        "drift_detected": true
+      }
+    }
+  },
+  "prediction_drift": {
+    "test_name": "Kolmogorov-Smirnov Prediction Probabilities",
+    "statistic": 0.102,
+    "p_value": 4e-05,
+    "reference_selection_rate": 0.8829,
+    "current_selection_rate": 0.9433,
+    "selection_rate_gap": 0.0605,
+    "prediction_drift_detected": true
+  },
+  "retraining_decision": {
+    "retraining_recommended": true,
+    "urgency_level": "ATTENTION_REQUIRED",
+    "status_label": "Retraining Recommended",
+    "triggered_reasons": [
+      "Prediction probability drift detected with high significance (p=0.00004)."
+    ],
+    "guidance": "Statistical drift threshold breached. Schedule shadow model training on next batch cycle."
+  }
+}

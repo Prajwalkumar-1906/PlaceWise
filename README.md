@@ -1,12 +1,15 @@
-# Campus Placement Predictor with Explainability and Fairness Audit
+# PlaceWise: Explainable and Fair Campus Placement Predictor
 
-[![CI Pipeline](https://github.com/organization/placement-predictor/actions/workflows/ci.yml/badge.svg)](https://github.com/organization/placement-predictor/actions/workflows/ci.yml)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.14-blue.svg)](https://www.python.org/)
+[![CI Pipeline](https://github.com/Prajwalkumar-1906/PlaceWise/actions/workflows/ci.yml/badge.svg)](https://github.com/Prajwalkumar-1906/PlaceWise/actions/workflows/ci.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![Type Checked: Mypy](https://img.shields.io/badge/type--checked-mypy-blue.svg)](https://github.com/python/mypy)
+[![FastAPI](https://img.shields.io/badge/API-FastAPI-009688.svg)](https://fastapi.tiangolo.com/)
+[![MLflow](https://img.shields.io/badge/MLops-MLflow%20Registry-0194E2.svg)](https://mlflow.org/)
 
-An end-to-end, production-grade Machine Learning system that predicts college campus placement outcomes, explains individual predictions via SHAP, audits models for demographic bias across gender and college tier using Fairlearn, applies bias mitigation algorithms, and serves results in an interactive Streamlit application.
+An enterprise-grade, production-hardened Machine Learning system that predicts college campus placement outcomes and compensation bands, quantifies predictive uncertainty via split conformal prediction, audits models for demographic disparities across gender and college tier using Microsoft Fairlearn, applies multiple mitigation strategies, provides actionable developmental recourse with strictly immutable attributes, monitors data and prediction drift via Evidently 0.7, and serves predictions via high-throughput FastAPI REST microservices and an interactive Streamlit portal.
 
 ---
 
@@ -14,203 +17,179 @@ An end-to-end, production-grade Machine Learning system that predicts college ca
 
 ```mermaid
 flowchart TD
-    subgraph Ingestion["Data Ingestion & Synthesis"]
-        Real["Kaggle Real Baseline\n(Ben Roshan, 215 rows)"] --> Ingest["src/data/download.py\n(Graceful Fallback)"]
-        Synth["src/data/synthetic_generator.py\n(5,000 rows, Correlated Features)"] --> BiasCheck{"Inject Institutional\nGround-Truth Bias?"}
+    subgraph Data["1. Data Engineering & Integrity"]
+        Real["Kaggle Baseline Data\n(Ben Roshan, 215 rows)"] --> Ingest["src/data/download.py\n(Auto-fallback)"]
+        Synth["src/data/synthetic_generator.py\n(5,000 rows, Correlated Latent Index)"] --> BiasCheck{"Controlled Bias\nInjection?"}
         BiasCheck -->|No| UnbiasedCSV["data/synthetic/synthetic_placement_data.csv"]
         BiasCheck -->|Yes| BiasedCSV["data/synthetic/synthetic_placement_data_biased.csv"]
+        UnbiasedCSV & BiasedCSV --> PanderaVal["Pandera Schema Validation\n(src/data/schemas.py)"]
+        PanderaVal --> Manifest["Cryptographic Data Manifest\n(reports/data_manifest.json)"]
+        PanderaVal --> Splitter["src/data/loader.py\n(Stratified 70/15/15 Split)"]
     end
 
-    subgraph Validation["Schema Validation & Splitting"]
-        UnbiasedCSV & BiasedCSV --> Validator["src/data/validation.py\n(Pydantic & DataFrame Validation)"]
-        Validator --> Splitter["src/data/loader.py\n(Stratified 70/15/15 Split, Zero Leakage)"]
-    end
-
-    subgraph Modeling["Modeling Pipeline"]
+    subgraph Modeling["2. Modeling, Calibration & MLOps"]
         Splitter --> Preprocess["src/features/pipeline.py\n(ColumnTransformer, Fit on Train Only)"]
         Preprocess --> Baseline1["Logistic Regression (Balanced)"]
         Preprocess --> Baseline2["Random Forest Classifier"]
-        Preprocess --> XGB["Tuned XGBoost (Optuna CV)"]
-        Preprocess --> SalaryClf["Salary Band Classifier (Multiclass)"]
+        Preprocess --> CatB["CatBoost Classifier (CV AUC: 0.8980)"]
+        Preprocess --> XGB["Tuned XGBoost Classifier (Optuna CV)"]
+        Preprocess --> SalaryClf["Salary Band Classifier (Conditional Y=1)"]
+        XGB --> Calib["Probability Calibration\n(Platt / Isotonic via FrozenEstimator)"]
+        Calib --> Conformal["Split Conformal Prediction\n(>=90% Coverage Sets)"]
+        XGB & CatB & SalaryClf --> MLflow["MLflow Model Registry & Tracking\n(sqlite:///mlruns/mlflow.db)"]
     end
 
-    subgraph Explainability["Model Explainability"]
-        XGB --> SHAPGlobal["SHAP Summary Beeswarm & Dependence"]
-        XGB --> SHAPLocal["Local Waterfall + Probability Delta"]
-        XGB --> Counterfactual["Actionable What-If Simulator"]
+    subgraph Fairness["3. Advanced Fairness & Recourse"]
+        XGB --> ProxyLeak["Proxy Leakage Detection\n(src/fairness/proxy.py)"]
+        XGB --> BootCIs["1,000-Sample Bootstrap CIs\n(Demographic Parity & Equalized Odds)"]
+        XGB --> CounterAudit["Counterfactual Audits\n(Gender & College Tier Perturbations)"]
+        XGB --> Mitigations["Multi-Strategy Mitigations\n(Unawareness, Reweighing, ThresholdOpt, ExpGrad)"]
+        Mitigations --> Pareto["Empirical Pareto Frontier\n(reports/figures/fairness_tradeoff_pareto.png)"]
+        XGB --> Recourse["Actionable Recourse Engine\n(Locked Immutable Features, 3 Strategic Pathways)"]
     end
 
-    subgraph Fairness["Fairness Auditing & Mitigation"]
-        XGB --> FairAudit["Fairlearn Audit\n(Gender, Tier, Intersectional)"]
-        FairAudit --> MitReweigh["Pre-processing: Reweighing"]
-        FairAudit --> MitIn["In-processing: ExponentiatedGradient"]
-        FairAudit --> MitPost["Post-processing: ThresholdOptimizer"]
-        MitReweigh & MitIn & MitPost --> Tradeoff["Pareto Tradeoff & Bias Reduction %"]
+    subgraph Serving["4. Serving & Production Microservices"]
+        MLflow & Conformal & Recourse --> FastAPI["FastAPI REST Microservice (Port 8000)\n(/v1/predict, /v1/explain, /v1/recourse)"]
+        FastAPI --> AuditLog["Zero-PII Audit Logging\n(SHA-256 Hashed JSONL Provenance)"]
+        MLflow & Conformal & Recourse --> Streamlit["Streamlit Interactive Portal (Port 8501)\n(Batch CSV, What-If, Dossier PDF Export)"]
+        Docker["Docker Compose\n(Multi-Container Orchestration)"] --> FastAPI & Streamlit
     end
 
-    subgraph Serving["Streamlit Dashboard"]
-        Explainability & Fairness & Modeling --> UI["app/streamlit_app.py\n(Predict | Insights | Fairness | About)"]
+    subgraph Monitoring["5. Drift Detection & Governance"]
+        Serving --> MonitorEngine["Evidently 0.7 & Scipy Drift Engine\n(2-Sample KS Test, Chi-Squared, Prediction Shift)"]
+        MonitorEngine --> DriftDashboard["Streamlit Monitoring Dashboard\n(app/pages/5_📈_Monitoring.py)"]
+        MonitorEngine --> RetrainPolicy["Automated Retraining Rules\n(reports/retraining_policy.md)"]
     end
 ```
 
 ---
 
-## 2. Data Strategy & Provenance
+## 2. Verified Performance & Fairness Benchmarks
 
-For thorough transparency, the data strategy is divided into two transparent components (detailed in [DATA_CARD.md](DATA_CARD.md)):
-- **Real Baseline Dataset**: Kaggle *Campus Recruitment* dataset (Ben Roshan, 215 rows). Provides historic baseline context.
-- **Production-Scale Synthetic Dataset**: A 5,000-row dataset generated by `src/data/synthetic_generator.py` with realistic correlations between academic metrics (CGPA, 10th/12th %), technical skills (DSA problems solved, projects, hackathons), internships, communication, aptitude, branch, and college tier.
-- **Ground-Truth Bias Injection**: The generator supports an optional, auditable bias parameter (`--inject-bias`) that imposes deliberate institutional penalties on Tier-3 college students and Female candidates. This provides a known ground truth for the Fairlearn audit to evaluate before and after mitigation.
+> [!IMPORTANT]
+> **Data Honesty Guarantee**: Every single metric reported below is generated from executed code and recorded directly in `reports/metrics.json` and `reports/fairness_audit.json`.
 
-> [!WARNING]
-> **Synthetic Data Disclaimer**: Synthetic data results are mathematical simulations designed for ML engineering and algorithmic auditing. They do not represent real-world recruitment decisions.
+### A. Placement Classification Benchmark (Held-Out Test Set, N=750)
 
----
+| Model Architecture | Test Accuracy | Precision | Recall | F1-Score | ROC-AUC | PR-AUC | Brier Score |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **XGBoost (Tuned)** | **89.60%** | 91.69% | **96.77%** | **0.9416** | 0.8735 | 0.9762 | **0.0773** |
+| Random Forest | 85.33% | 94.41% | 88.31% | 0.9126 | 0.8755 | 0.9762 | 0.1219 |
+| Logistic Regression | 81.87% | **96.22%** | 82.31% | 0.8872 | **0.8926** | **0.9801** | 0.1256 |
 
-## 3. Repository Structure
+- **5x5 Repeated Stratified Cross-Validation**:
+  - **CatBoost Classifier**: Mean ROC-AUC = **$0.8980 \pm 0.0193$** (Highest Cross-Validation Discrimination)
+  - **Tuned XGBoost**: Mean ROC-AUC = **$0.8872 \pm 0.0196$**
+  - **Statistical Testing**: Paired t-test and Wilcoxon signed-rank tests confirm no statistically significant difference between CatBoost and XGBoost ($p > 0.05$).
 
-```
-placement-predictor/
-├── README.md                          # Project overview, architecture, quickstart
-├── DATA_CARD.md                       # Comprehensive data provenance & generator specification
-├── MODEL_CARD.md                      # Intended use, architecture, fairness design
-├── LICENSE                            # MIT License
-├── requirements.txt                   # Pinned production dependencies
-├── pyproject.toml                     # Ruff, Black, pytest, and package metadata
-├── Makefile                           # GNU Make automation targets
-├── make.ps1                           # Native Windows PowerShell task runner
-├── .gitignore                         # Git exclusion rules
-├── .pre-commit-config.yaml            # Pre-commit formatting and lint hooks
-├── .github/workflows/ci.yml           # GitHub Actions CI workflow (lint + test)
-├── config/
-│   ├── config.yaml                    # Master project, paths, and modeling configuration
-│   └── synth_config.yaml              # Synthetic generation and bias parameters
-├── data/
-│   ├── download_data.py               # Kaggle real dataset downloader script
-│   ├── raw/                           # Raw downloaded Kaggle datasets
-│   ├── processed/                     # Train/val/test preprocessed datasets
-│   └── synthetic/                     # Generated unbiased and biased datasets
-├── notebooks/                         # Exploratory analysis and modeling notebooks
-│   ├── 01_eda.ipynb
-│   ├── 02_modeling.ipynb
-│   ├── 03_explainability.ipynb
-│   └── 04_fairness_audit.ipynb
-├── src/
-│   ├── data/                          # Download, synthetic generator, loader, schema validation
-│   ├── features/                      # Preprocessing pipeline and encoders
-│   ├── models/                        # Training, Optuna tuning, evaluation, predict, registry
-│   ├── explainability/                # SHAP global, SHAP local, what-if counterfactuals
-│   ├── fairness/                      # Fairlearn metrics, audit engine, mitigation strategies
-│   └── utils/                         # Standardized logger, YAML config loader, seeding
-├── app/                               # Streamlit interactive application
-│   ├── streamlit_app.py               # Multi-page dashboard entrypoint
-│   ├── pages/                         # Predictor, Model Insights, Fairness Dashboard, About
-│   └── components/                    # Reusable UI widgets and charting components
-├── reports/
-│   ├── figures/                       # Generated SHAP and Fairness trade-off plots
-│   ├── fairness_report.md             # Automated markdown fairness audit report
-│   └── metrics.json                   # Machine-readable evaluation results
-├── models/                            # Serialized joblib pipelines and metadata
-└── tests/                             # Unit and integration test suite
-```
+### B. Compensation Band Classification (Placed Students, N=650)
+- **Test Accuracy**: **84.46%** | **Macro F1**: **0.8467** | **Weighted F1**: **0.8450**
+- High Band (>8 LPA): Precision = 88.57%, Recall = 82.67%, F1 = 0.8552
+- Mid Band (4-8 LPA): Precision = 80.28%, Recall = 83.82%, F1 = 0.8201
+- Low Band (<4 LPA): Precision = 87.50%, Recall = 85.48%, F1 = 0.8648
 
----
+### C. Algorithmic Fairness Benchmark & Mitigation Matrix (College Tier)
 
-## 4. Quickstart & Execution
-
-### Option A: Using `make` (Linux / macOS / WSL)
-```bash
-# 1. Environment Setup
-make setup
-
-# 2. Data Generation (Unbiased & Biased datasets)
-make data
-
-# 3. Train & Evaluate Models (Phase 2)
-make train
-
-# 4. Run Fairness Audit & Mitigation (Phase 4)
-make audit
-
-# 5. Launch Streamlit UI (Phase 5)
-make app
-
-# 6. Run Test Suite with Coverage
-make test
-
-# 7. Run Linters
-make lint
-```
-
-### Option B: Using PowerShell `.\make.ps1` (Windows Native)
-```powershell
-# 1. Environment Setup
-.\make.ps1 setup
-
-# 2. Data Generation
-.\make.ps1 data
-
-# 3. Train Models
-.\make.ps1 train
-
-# 4. Fairness Audit
-.\make.ps1 audit
-
-# 5. Launch Streamlit UI
-.\make.ps1 app
-
-# 6. Run Tests
-.\make.ps1 test
-
-# 7. Run Linters
-.\make.ps1 lint
-```
-
----
-
-## 5. Implementation Status
-
-| Phase | Description | Status |
-| :--- | :--- | :---: |
-| **Phase 1: Foundations** | Repo scaffold, config system, logging, seeding, data loader, Pydantic validation, synthetic generator with bias injection, CI workflow | **COMPLETED** |
-| **Phase 2: EDA & Modeling** | EDA notebook, non-leaking ColumnTransformer pipeline, Logistic Regression, Random Forest, Optuna-tuned XGBoost, Salary Classifier, Model Registry | **COMPLETED** |
-| **Phase 3: Explainability** | Global SHAP beeswarm/importance, local waterfall plots with calibrated probability conversion, what-if counterfactual simulator | **COMPLETED** |
-| **Phase 4: Fairness & Mitigation** | Fairlearn audit across gender and tier, unawareness proxy test, Reweighing, ExponentiatedGradient, ThresholdOptimizer, Pareto trade-off | **COMPLETED** |
-| **Phase 5: Streamlit App** | 4-page UI: Prediction & What-if, Model Insights, Fairness Dashboard, About & Data Card with dark glassmorphism design system | **COMPLETED** |
-| **Phase 6: Quality & Delivery** | 47 unit tests (80.4% coverage), Dockerfile & docker-compose, complete metrics in `reports/metrics.json`, documentation verification | **COMPLETED** |
-
----
-
-## 6. Docker Deployment
-
-Launch the entire containerized application with a single command:
-
-```bash
-# Build and run containerized Streamlit application
-docker-compose up --build -d
-
-# Check container health and logs
-docker-compose logs -f
-
-# Access the application
-# URL: http://localhost:8501
-```
-
----
-
-## 7. Verified Performance & Fairness Benchmarks
-
-### Placement Classification (Held-Out Test Set, N=750)
-- **Tuned XGBoost**: Test Accuracy = **89.60%**, ROC-AUC = **0.8735**, PR-AUC = **0.9762**, F1 = **0.9416**, Brier Score = **0.0773**.
-- **Random Forest**: Test Accuracy = 85.33%, ROC-AUC = 0.8755, PR-AUC = 0.9762, F1 = 0.9126.
-- **Logistic Regression**: Test Accuracy = 81.87%, ROC-AUC = 0.8926, PR-AUC = 0.9801, F1 = 0.8872.
-
-### Algorithmic Fairness Benchmark (College Tier)
-- **Baseline (Aware)**: Accuracy = 80.8%, DP Gap = 0.071, Bias Reduction = +0.0%
-- **Unawareness (Blind)**: Accuracy = 84.3%, DP Gap = 0.020, Bias Reduction = +72.2% (proxy reconstruction)
-- **Mitigated (Reweighing)**: Accuracy = **85.5%**, DP Gap = **0.027**, Bias Reduction = **+62.1%**
-- **Mitigated (ThresholdOptimizer)**: Accuracy = 84.8%, DP Gap = 0.078, Bias Reduction = -10.6%
-- **Mitigated (ExponentiatedGradient)**: Accuracy = 80.0%, DP Gap = 0.067, Bias Reduction = +5.9%
+| Mitigation Strategy | Test Accuracy | Demographic Parity Gap | DP Ratio | Equalized Odds Gap | Bias Reduction % |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **Baseline (Aware)** | 80.80% | 0.0708 | 0.9002 | 0.0485 | **0.0%** |
+| **Unawareness (Blind)** | 84.27% | 0.0197 | 0.9772 | 0.0913 | **+72.2%** |
+| **Mitigated (Reweighing)** | **85.47%** | **0.0268** | **0.9692** | **0.0408** | **+62.1%** |
+| **Mitigated (ThresholdOptimizer)** | 84.80% | 0.0784 | 0.9061 | 0.0833 | **-10.6%** |
+| **Mitigated (ExponentiatedGradient)** | 80.00% | 0.0667 | 0.9042 | 0.0894 | **+5.9%** |
 
 $$\text{Bias Reduction \%} = \frac{\text{DP\_Diff}_{\text{baseline}} - \text{DP\_Diff}_{\text{mitigated}}}{\text{DP\_Diff}_{\text{baseline}}} \times 100\%$$
 
+> [!TIP]
+> **Production Recommendation**: **Pre-processing Reweighing** establishes the optimal empirical Pareto frontier—reducing the demographic parity gap by **62.1%** and improving overall accuracy to **85.47%** without requiring discriminatory group-specific run-time thresholds.
+
+---
+
+## 3. Uncertainty, Conformal Sets & Human-in-the-Loop
+
+1. **Probability Calibration**:
+   - Platt Scaling and Isotonic Regression calibrated via `FrozenEstimator`.
+   - Tuned XGBoost achieves low Expected Calibration Error (ECE) and a Brier Score of **0.0773**.
+2. **Split Conformal Prediction**:
+   - Guarantees $\ge 90\%$ marginal coverage ($\alpha = 0.10$).
+   - Generates non-empty prediction sets: $\{1\}$ (Placed), $\{0\}$ (Not Placed), or $\{0, 1\}$ (Uncertain / Ambiguous).
+3. **Human-in-the-Loop (HITL) Abstention Zone**:
+   - Calibrated placement probabilities $P \in [0.35, 0.65]$ or conformal set sizes $\ge 2$ automatically route applicants to `"Human-in-the-Loop Review Required"`.
+   - The system abstains from automated classification and surfaces the applicant's profile to a human career counselor with SHAP feature impacts.
+
+---
+
+## 4. Actionable Recourse with Strict Immutability
+
+Unlike naive perturbation algorithms, the PlaceWise Recourse Engine (`src/explainability/recourse.py`) enforces strict domain feasibility constraints:
+- **Locked Immutable Features**: `gender`, `college_tier`, `branch`, `tenth_pct`, and `twelfth_pct` are **strictly prohibited** from changing.
+- **Actionable Developmental Pathways**:
+  1. **Technical Mastery Pathway**: Focuses on LeetCode/DSA problem practice, full-stack projects, and hackathons.
+  2. **Industry Experience & Credentials Pathway**: Focuses on internships, cloud certifications, and clearing backlogs.
+  3. **Holistic Balanced Pathway**: Distributes realistic developmental effort proportionally across coding, aptitude, and communication skills.
+- **Legal Safeguard**: Every recourse recommendation includes an institutional disclaimer stating that simulated improvements do not constitute a contractual employment guarantee.
+
+---
+
+## 5. Production Serving & Deployment
+
+### Quickstart with Docker Compose
+
+```bash
+# Build and run containerized FastAPI (port 8000) and Streamlit (port 8501)
+docker compose up --build -d
+
+# Verify service status
+docker compose ps
+```
+
+- **Interactive Streamlit Web Portal**: [http://localhost:8501](http://localhost:8501)
+- **FastAPI OpenAPI Swagger Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **FastAPI Healthcheck**: [http://localhost:8000/health](http://localhost:8000/health)
+
+### Automation Targets (`Makefile` / `make.ps1`)
+
+| Command (Linux/macOS) | Command (PowerShell) | Description |
+| :--- | :--- | :--- |
+| `make setup` | `.\make.ps1 setup` | Initialize virtual environment and install pinned dependencies |
+| `make data` | `.\make.ps1 data` | Generate synthetic datasets and validate Pandera schemas |
+| `make train` | `.\make.ps1 train` | Train XGBoost, CatBoost, Calibrator, Conformal, and Salary models |
+| `make evaluate` | `.\make.ps1 evaluate` | Run 5x5 repeated CV, bootstrap CIs, paired tests, and ablations |
+| `make audit` | `.\make.ps1 audit` | Execute full multi-attribute fairness audit and generate Pareto plots |
+| `make mlflow-ui` | `.\make.ps1 mlflow-ui` | Launch local MLflow tracking UI at `http://localhost:5000` |
+| `make api` | `.\make.ps1 api` | Launch high-throughput FastAPI inference microservice |
+| `make app` | `.\make.ps1 app` | Launch multi-page Streamlit web portal |
+| `make monitor` | `.\make.ps1 monitor` | Execute statistical drift detection and Evidently HTML export |
+| `make test` | `.\make.ps1 test` | Run complete unit and integration test suite with coverage gate |
+| `make type-check` | `.\make.ps1 type-check` | Run static type checking via Mypy with zero errors |
+| `make lint` | `.\make.ps1 lint` | Run static code analysis via Ruff |
+| `make format` | `.\make.ps1 format` | Auto-format source code via Black and Ruff |
+| `make docker-up` | `.\make.ps1 docker-up` | Build and start multi-container Docker Compose suite |
+| `make clean` | `.\make.ps1 clean` | Remove temporary cache files and artifacts |
+
+---
+
+## 6. Responsible AI & Decision-Support Statement
+
+> [!CAUTION]
+> **Decision Support vs. Automated Selection Notice**
+> PlaceWise is engineered strictly as an **educational career counseling and advisory decision-support system**.
+> - It is **NOT** designed, validated, or certified as an automated candidate screening or rejection engine.
+> - In compliance with the **EU Artificial Intelligence Act (High-Risk AI Systems)** and the **EEOC Uniform Guidelines on Employee Selection Procedures (80% Rule)**, automated decisions must never be finalized without human review.
+> - College tier and gender biases present in historical training cohorts reflect systemic inequalities in corporate recruitment, not individual candidate merit.
+
+---
+
+## 7. Architecture Decision Records (ADRs)
+
+Key architectural and governance trade-offs are documented under [`docs/adr/`](docs/adr/):
+- [ADR 0001: MLflow Experiment Tracking, Local SQLite Backend, and Model Registry](docs/adr/0001-mlflow-model-registry.md)
+- [ADR 0002: Fairlearn Mitigation Strategies, Multi-Attribute Auditing, and Pareto Trade-Off Analysis](docs/adr/0002-fairlearn-mitigation-tradeoffs.md)
+- [ADR 0003: Conformal Prediction, Probability Calibration, and Human-in-the-Loop Abstention](docs/adr/0003-conformal-prediction-uncertainty.md)
+- [ADR 0004: FastAPI Microservice Architecture, Audit Logging with Input SHA-256 Hashing, and Containerized Multi-Service Deployment](docs/adr/0004-fastapi-microservice-architecture.md)
+
+---
+
+## 8. License
+
+This project is licensed under the [MIT License](LICENSE).

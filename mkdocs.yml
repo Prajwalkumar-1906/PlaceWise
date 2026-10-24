@@ -1,0 +1,60 @@
+site_name: "PlaceWise: Explainable and Fair Placement Predictor"
+site_description: "Production-grade, fair, and explainable ML system for higher education placement decision-support."
+site_author: "PlaceWise Engineering Team"
+repo_url: "https://github.com/Prajwalkumar-1906/PlaceWise"
+repo_name: "PlaceWise"
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: deep purple
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.arithmatex:
+      generic: true
+  - tables
+  - attr_list
+
+nav:
+  - Overview: index.md
+  - Deployment: deployment.md
+  - Architecture Decisions:
+      - "0001: MLflow Tracking & Registry": adr/0001-mlflow-model-registry.md
+      - "0002: Fairlearn Mitigation Trade-offs": adr/0002-fairlearn-mitigation-tradeoffs.md
+      - "0003: Conformal Prediction & Calibration": adr/0003-conformal-prediction-uncertainty.md
+      - "0004: FastAPI Microservice & Containerization": adr/0004-fastapi-microservice-architecture.md
+  - Governance & Cards:
+      - Model Card: MODEL_CARD.md
+      - Data Card: DATA_CARD.md
+  - Project:
+      - Changelog: CHANGELOG.md
+      - Contributing: CONTRIBUTING.md

@@ -65,7 +65,8 @@
     "Low",
     "Mid"
   ],
+  "mlflow_run_id": "d2f6d3adf36948baa0f2e6d7b3f0dfed",
   "model_name": "salary_band_model",
-  "saved_at": "2026-10-15T05:42:40.073441+00:00",
+  "saved_at": "2026-10-24T12:01:32.670065+00:00",
   "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\salary_band_model.joblib"
 }

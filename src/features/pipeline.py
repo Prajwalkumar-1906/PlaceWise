@@ -35,16 +35,19 @@ def create_preprocessing_pipeline(
 
     cat_pipeline = Pipeline(
         steps=[
-            ("imputer", SimpleImputer(strategy="constant", fill_value="Missing")),
+            ("imputer", SimpleImputer(strategy="most_frequent")),
             ("onehot", OneHotEncoder(handle_unknown="ignore", sparse_output=False)),
         ]
     )
 
+    transformers = []
+    if numerical_features:
+        transformers.append(("num", num_pipeline, numerical_features))
+    if categorical_features:
+        transformers.append(("cat", cat_pipeline, categorical_features))
+
     preprocessor = ColumnTransformer(
-        transformers=[
-            ("num", num_pipeline, numerical_features),
-            ("cat", cat_pipeline, categorical_features),
-        ],
+        transformers=transformers,
         remainder="drop",
         verbose_feature_names_out=False,
     )

@@ -253,3 +253,24 @@ def render_metric_card(
     </div>
     """
     st.markdown(card_html, unsafe_allow_html=True)
+
+
+def render_provenance_footer() -> None:
+    """Renders a global provenance footer displaying active model version, registry stage, and synthetic data disclosure."""
+    footer_html = """
+    <div style="margin-top: 50px; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.08);
+                display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+                font-size: 0.82rem; color: #64748B;">
+        <div>
+            <span style="font-weight: 600; color: #94A3B8;">PlaceWise v0.1.0</span> |
+            <span>Model: <code>PlaceWise_XGBoost_Placement v4 (Production)</code></span> |
+            <span>Backend: <code>XGBoost + Platt Scaling</code></span>
+        </div>
+        <div>
+            <span style="background: rgba(99, 102, 241, 0.15); color: #818CF8; padding: 3px 8px; border-radius: 6px; font-weight: 500;">
+                Synthetic Simulation Cohort (Non-PII)
+            </span>
+        </div>
+    </div>
+    """
+    st.markdown(footer_html, unsafe_allow_html=True)

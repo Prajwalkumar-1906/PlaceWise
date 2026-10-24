@@ -194,3 +194,105 @@ def test_generate_fairness_report(tmp_path):
     assert "Explicit Bias Reduction Formula" in content
     assert (tmp_path / "fairness_selection_rates.png").exists()
     assert (tmp_path / "fairness_tradeoff_pareto.png").exists()
+
+
+def test_fairness_auditor_init():
+    from src.fairness.audit import FairnessAuditor
+
+    auditor = FairnessAuditor(config_path="config/config.yaml")
+    assert auditor is not None
+    assert auditor.config is not None
+
+
+def test_compute_fairness_bootstrap_cis():
+    from src.fairness.metrics import compute_fairness_bootstrap_cis
+
+    y_true = np.array([1, 1, 0, 0, 1, 0, 1, 0, 1, 0])
+    y_pred = np.array([1, 1, 0, 0, 0, 1, 1, 0, 1, 0])
+    sens = np.array(["A", "A", "A", "A", "A", "B", "B", "B", "B", "B"])
+
+    cis = compute_fairness_bootstrap_cis(y_true, y_pred, sens, n_bootstraps=20, seed=42)
+    assert "demographic_parity_difference" in cis
+    assert "ci_lower" in cis["demographic_parity_difference"]
+    assert "ci_upper" in cis["demographic_parity_difference"]
+    assert "selection_rates_by_group" in cis
+    assert "A" in cis["selection_rates_by_group"]
+
+
+def test_detect_proxy_leakage():
+    from src.fairness.proxy import detect_proxy_leakage
+
+    df = pd.DataFrame(
+        {
+            "gpa": [9.0, 8.5, 7.0, 6.5, 9.2, 8.8, 7.1, 6.2, 9.1, 8.4],
+            "dsa": [200, 180, 50, 40, 210, 190, 60, 30, 195, 175],
+            "gender": [
+                "Male",
+                "Female",
+                "Male",
+                "Female",
+                "Male",
+                "Female",
+                "Male",
+                "Female",
+                "Male",
+                "Female",
+            ],
+            "college_tier": [1, 1, 3, 3, 1, 1, 3, 3, 1, 1],
+        }
+    )
+
+    leakage = detect_proxy_leakage(
+        df, sensitive_col="college_tier", feature_cols=["gpa", "dsa", "gender"], random_seed=42
+    )
+    assert "proxy_roc_auc" in leakage
+    assert "verdict" in leakage
+    assert "top_predictive_proxies" in leakage
+
+
+def test_evaluate_counterfactual_fairness():
+    from src.fairness.counterfactual import evaluate_counterfactual_fairness
+
+    df = pd.DataFrame(
+        {
+            "gpa": [9.0, 8.5, 7.0, 6.5],
+            "gender": ["Male", "Female", "Male", "Female"],
+            "college_tier": [1, 2, 3, 1],
+        }
+    )
+    num_cols = ["gpa"]
+    cat_cols = ["gender", "college_tier"]
+    preproc = create_preprocessing_pipeline(num_cols, cat_cols)
+    clf = XGBClassifier(n_estimators=5, max_depth=2, random_state=42)
+    pipe = Pipeline([("preprocessor", preproc), ("classifier", clf)])
+    pipe.fit(df[num_cols + cat_cols], [1, 1, 0, 0])
+
+    cf_gender = evaluate_counterfactual_fairness(
+        pipe, df, "gender", feature_cols=num_cols + cat_cols
+    )
+    assert "flip_rate_pct" in cf_gender
+    assert "mean_prob_shift" in cf_gender
+    assert "is_counterfactually_fair" in cf_gender
+
+    # Test unaware pipeline
+    unaware_pipe = Pipeline(
+        [("preprocessor", create_preprocessing_pipeline(num_cols, [])), ("classifier", clf)]
+    )
+    unaware_pipe.fit(df[num_cols], [1, 1, 0, 0])
+    cf_unaware = evaluate_counterfactual_fairness(unaware_pipe, df, "gender", feature_cols=num_cols)
+    assert cf_unaware["is_counterfactually_fair"] is True
+    assert cf_unaware["flip_rate_pct"] == 0.0
+
+
+def test_fairness_auditor_run_fast():
+    from src.fairness.audit import FairnessAuditor
+
+    auditor = FairnessAuditor(config_path="config/config.yaml")
+    results = auditor.run_full_audit(n_bootstraps=5)
+    assert "models" in results
+    assert "Baseline (Aware)" in results["models"]
+    assert "Mitigated (Reweighing)" in results["models"]
+    assert "counterfactual" in results
+    assert "proxy_leakage" in results
+    assert "fairness_cis" in results
+    assert "tradeoffs" in results

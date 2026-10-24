@@ -108,7 +108,10 @@
     }
   },
   "dataset_type": "unbiased",
+  "git_commit": "b1c7ef0ea1dd09c61c751bca29ec1562ab78e6a2",
+  "data_hash": "d4524fbc9f918d75",
+  "mlflow_run_id": "d2f6d3adf36948baa0f2e6d7b3f0dfed",
   "model_name": "best_placement_model",
-  "saved_at": "2026-10-15T05:42:40.060172+00:00",
+  "saved_at": "2026-10-24T12:01:32.653623+00:00",
   "artifact_path": "D:\\Desktop\\Projects\\AIML\\placement-predictor\\models\\best_placement_model.joblib"
 }

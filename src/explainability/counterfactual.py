@@ -111,7 +111,7 @@ class WhatIfSimulator:
         recommendations: list[dict[str, Any]] = []
 
         # Test single-lever improvements
-        test_increments = {
+        test_increments: dict[str, list[Any]] = {
             "dsa_problems_solved": [50, 100, 200],
             "internships": [1],
             "projects": [1, 2],

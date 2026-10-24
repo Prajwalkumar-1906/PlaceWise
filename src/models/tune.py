@@ -10,6 +10,7 @@ from xgboost import XGBClassifier
 
 from src.features.pipeline import create_preprocessing_pipeline
 from src.models.evaluate import evaluate_binary_classifier
+from src.models.tracking import log_optuna_trial_run
 from src.utils.logger import get_logger
 
 # Suppress Optuna verbose logging by default
@@ -89,7 +90,9 @@ def tune_xgboost(
             metrics = evaluate_binary_classifier(y_fold_va, y_va_prob)
             fold_scores.append(metrics["roc_auc"])
 
-        return float(np.mean(fold_scores))
+        mean_cv_score = float(np.mean(fold_scores))
+        log_optuna_trial_run(trial.number, params, mean_cv_score)
+        return mean_cv_score
 
     sampler = optuna.samplers.TPESampler(seed=random_seed)
     study = optuna.create_study(direction="maximize", sampler=sampler)

@@ -50,10 +50,20 @@ htmlcov/
 
 # Ruff and linters
 .ruff_cache/
+.mypy_cache/
+
+# MLflow tracking and artifacts
+mlruns/
+mlruns.db
+*.sqlite
+
+# Documentation site
+site/
 
 # Streamlit config / cache
-.streamlit/
 *.log
+logs/*.jsonl
+!logs/.gitkeep
 
 # Sensitive data / API keys
 .env.local
@@ -62,3 +72,6 @@ kaggle.json
 # Operating System files
 .DS_Store
 Thumbs.db
+
+# CatBoost training logs
+catboost_info/

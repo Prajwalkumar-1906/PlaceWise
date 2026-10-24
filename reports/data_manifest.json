@@ -1,0 +1,60 @@
+{
+  "generated_at": "2026-10-24T11:27:24.357516+00:00",
+  "hash_algorithm": "SHA-256",
+  "datasets": {
+    "synthetic_placement_data.csv": {
+      "relative_path": "data/synthetic/synthetic_placement_data.csv",
+      "sha256": "d4524fbc9f918d75474aa6dd97311a2701634ddeda5958462fe3f883e4f1ffba",
+      "size_bytes": 374866,
+      "row_count": 5000,
+      "column_count": 17,
+      "columns": [
+        "cgpa",
+        "tenth_pct",
+        "twelfth_pct",
+        "backlogs",
+        "dsa_problems_solved",
+        "projects",
+        "internships",
+        "certifications",
+        "hackathons",
+        "communication_score",
+        "aptitude_score",
+        "branch",
+        "college_tier",
+        "gender",
+        "work_experience",
+        "placed",
+        "salary_band"
+      ],
+      "last_modified": "2026-10-15T02:21:44.422101+00:00"
+    },
+    "synthetic_placement_data_biased.csv": {
+      "relative_path": "data/synthetic/synthetic_placement_data_biased.csv",
+      "sha256": "9a298a2b87d2e92703d9a60b51953237a16b1ae0a52194a2561f643e70d160ac",
+      "size_bytes": 378099,
+      "row_count": 5000,
+      "column_count": 17,
+      "columns": [
+        "cgpa",
+        "tenth_pct",
+        "twelfth_pct",
+        "backlogs",
+        "dsa_problems_solved",
+        "projects",
+        "internships",
+        "certifications",
+        "hackathons",
+        "communication_score",
+        "aptitude_score",
+        "branch",
+        "college_tier",
+        "gender",
+        "work_experience",
+        "placed",
+        "salary_band"
+      ],
+      "last_modified": "2026-10-15T02:21:52.971933+00:00"
+    }
+  }
+}
